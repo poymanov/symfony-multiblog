@@ -1,5 +1,8 @@
-init: docker-down-clear docker-pull docker-build docker-up app-init
-app-init: wait-db
+init: docker-down-clear app-clear docker-pull docker-build docker-up app-init
+app-init: composer-install assets-install wait-db app-ready
+up: docker-up
+down: docker-down
+restart: down up
 
 docker-up:
 	docker-compose up -d
@@ -21,3 +24,16 @@ wait-db:
 
 test:
 	docker-compose run --rm php-cli php bin/phpunit
+
+composer-install:
+	docker-compose run --rm php-cli composer install
+
+assets-install:
+	docker-compose run --rm node-cli yarn install
+	docker-compose run --rm node-cli npm rebuild node-sass
+
+app-ready:
+	docker run --rm -v ${PWD}/app:/app --workdir=/app alpine touch .ready
+
+app-clear:
+	docker run --rm -v ${PWD}/app:/app --workdir=/app alpine rm -f .ready
