@@ -1,0 +1,62 @@
+version: '3'
+services:
+    nginx:
+        build:
+            context: ./docker/nginx
+            dockerfile: Dockerfile
+        volumes:
+            - ./app:/app
+        depends_on:
+            - php-fpm
+        ports:
+            - "8080:80"
+    php-fpm:
+        build:
+            context: ./docker/php
+            dockerfile: php-fpm.docker
+        volumes:
+            - ./app:/app
+        depends_on:
+            - db
+            - mailer
+            - redis
+    php-cli:
+        build:
+            context: ./docker/php
+            dockerfile: php-cli.docker
+        volumes:
+            - ./app:/app
+        depends_on:
+            - db
+            - mailer
+            - redis
+    db:
+        image: postgres:11.2-alpine
+        volumes:
+            - db:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: app
+            POSTGRES_PASSWORD: secret
+            POSTGRES_DB: app
+        ports:
+            - "54321:5432"
+    mailer:
+        image: mailhog/mailhog
+        ports:
+            - "8082:8025"
+    redis:
+        image: redis:5.0-alpine
+        restart: always
+        volumes:
+            - redis:/data
+        command:
+            - 'redis-server'
+            - '--databases 2'
+            - '--save 900 1'
+            - '--save 300 10'
+            - '--save 60 10000'
+            - '--requirepass secret'
+
+volumes:
+    db:
+    redis:
