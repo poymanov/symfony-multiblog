@@ -18,3 +18,6 @@ docker-build:
 
 wait-db:
 	docker-compose run --rm php-cli wait-for-it db:5432 -t 30
+
+test:
+	docker-compose run --rm php-cli php bin/phpunit
