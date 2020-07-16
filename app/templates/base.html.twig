@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
-    <!-- Bootstrap core CSS -->
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
@@ -13,6 +12,7 @@
 {% include 'app/_common/_header.html.twig' %}
 
 <main role="main">
+    {% include '_flashes.html.twig' %}
     {% block body %}{% endblock %}
 </main>
 

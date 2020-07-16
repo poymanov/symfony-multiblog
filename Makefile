@@ -1,5 +1,8 @@
+.DEFAULT_GOAL := test
+
 init: docker-down-clear app-clear docker-pull docker-build docker-up app-init
-app-init: composer-install assets-install wait-db app-ready
+app-init: composer-install assets-install wait-db app-migrations app-fixtures app-ready
+test: app-test
 up: docker-up
 down: docker-down
 restart: down up
@@ -22,7 +25,7 @@ docker-build:
 wait-db:
 	docker-compose run --rm php-cli wait-for-it db:5432 -t 30
 
-test:
+app-test:
 	docker-compose run --rm php-cli php bin/phpunit
 
 composer-install:
@@ -37,3 +40,9 @@ app-ready:
 
 app-clear:
 	docker run --rm -v ${PWD}/app:/app --workdir=/app alpine rm -f .ready
+
+app-migrations:
+	docker-compose run --rm php-cli php bin/console doctrine:migrations:migrate --no-interaction
+
+app-fixtures:
+	docker-compose run --rm php-cli php bin/console doctrine:fixtures:load --no-interaction
