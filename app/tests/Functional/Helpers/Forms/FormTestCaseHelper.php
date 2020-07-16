@@ -41,9 +41,14 @@ class FormTestCaseHelper extends AbstractBaseTestCaseHelper
         $fields = $form->getFields();
 
         foreach ($fields as $field) {
-            $fieldTemplate = 'input[id="' . $form->formName . '_' . $field . '"]';
 
-            $this->testCase->assertCount(1, $crawler->filter($fieldTemplate), 'В форме не найдено поле - ' . $field);
+            if ($form->formName) {
+                $fieldTemplate = 'input[id="' . $form->formName . '_' . $field . '"]';
+            } else {
+                $fieldTemplate = 'input[id="' . $field . '"]';
+            }
+
+            $this->testCase->assertCount(1, $crawler->filter($fieldTemplate), 'В форме не найдено поле - ' . $fieldTemplate);
         }
     }
 }

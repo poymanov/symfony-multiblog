@@ -8,7 +8,7 @@ abstract class AbstractForm
 {
     public string $submitButtonTitle = 'Отправить';
 
-    public string $formName = 'form';
+    public ?string $formName = 'form';
 
     /**
      * Список полей формы
@@ -50,7 +50,13 @@ abstract class AbstractForm
         $formData = [];
 
         foreach ($data as $key => $value) {
-            $formData[$this->formName . '[' . $key . ']'] = $value;
+            if ($this->formName) {
+                $keyValue = $this->formName . '[' . $key . ']';
+            } else {
+                $keyValue = $key;
+            }
+
+            $formData[$keyValue] = $value;
         }
 
         return $formData;

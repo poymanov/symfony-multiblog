@@ -3,20 +3,31 @@
 {% block title %}Войти{% endblock %}
 
 {% block body %}
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
     <div class="container">
         <div class="row">
             <div class="col-md-12 mb-2">
                 <h1>Войти</h1>
             </div>
-            <div class="col-md-12">
-                <form class="mb-4">
+            <div class="col-md-12 mb-4">
+                <form method="post">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email">
+                        <input type="email" class="form-control" id="email" name="email" value="{{ last_username }}">
                     </div>
                     <div class="form-group">
                         <label for="password">Пароль</label>
-                        <input type="password" class="form-control" id="password">
+                        <input type="password" class="form-control" id="password" name="password">
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox mb-3">
+                            <label>
+                                <input type="checkbox" id="_remember_me" name="_remember_me"> <span class="text-muted">Запомнить меня</span>
+                            </label>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-success">Отправить</button>
                 </form>

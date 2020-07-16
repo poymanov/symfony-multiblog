@@ -3,7 +3,7 @@
 namespace App\Tests\Functional\Auth\SignUp\Request;
 
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\SignUpForm;
+use App\Tests\Functional\Forms\SignUp\Form;
 use App\Tests\Functional\Helpers\AlertTestCaseHelper;
 use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
 use App\Tests\Functional\Helpers\UrlTestCaseHelper;
@@ -28,7 +28,7 @@ class RequestTest extends DbWebTestCase
 
         $this->url   = new UrlTestCaseHelper($this);
         $this->alert = new AlertTestCaseHelper($this);
-        $this->form  = new FormTestCaseHelper($this, new SignUpForm());
+        $this->form  = new FormTestCaseHelper($this, new Form());
     }
 
     /**
@@ -65,10 +65,10 @@ class RequestTest extends DbWebTestCase
 
         $crawler = $this->form->submit->notValid();
 
-        $this->form->validation->assertRequiredErrorMessage(SignUpForm::FIELD_FIRST_NAME, $crawler);
-        $this->form->validation->assertRequiredErrorMessage(SignUpForm::FIELD_LAST_NAME, $crawler);
-        $this->form->validation->assertEmailErrorMessage(SignUpForm::FIELD_EMAIL, $crawler);
-        $this->form->validation->assertShortPasswordErrorMessage(SignUpForm::FIELD_PASSWORD, $crawler);
+        $this->form->validation->assertRequiredErrorMessage(Form::FIELD_FIRST_NAME, $crawler);
+        $this->form->validation->assertRequiredErrorMessage(Form::FIELD_LAST_NAME, $crawler);
+        $this->form->validation->assertEmailErrorMessage(Form::FIELD_EMAIL, $crawler);
+        $this->form->validation->assertShortPasswordErrorMessage(Form::FIELD_PASSWORD, $crawler);
     }
 
     /**

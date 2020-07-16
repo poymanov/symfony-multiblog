@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Auth;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,5 +23,14 @@ class AuthController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('app/auth/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+    }
+
+    /**
+     * @Route("/logout", name="app_logout", methods={"GET"})
+     * @throws Exception
+     */
+    public function logout()
+    {
+        throw new Exception('This method can be blank - it will be intercepted by the logout key on your firewall');
     }
 }

@@ -17,6 +17,20 @@ services:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Model/User/Entity,Entity,Migrations,Tests,Kernel.php}'
 
+    Redis:
+        class: Redis
+        calls:
+            - method: connect
+              arguments:
+                  - '%env(REDIS_HOST)%'
+            - method: auth
+              arguments:
+                  - '%env(REDIS_PASSWORD)%'
+
+    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+        arguments:
+            - '@Redis'
+
     App\Model\User\Entity\User\UserRepository: ~
 
     # controllers are imported separately to make sure services can be injected

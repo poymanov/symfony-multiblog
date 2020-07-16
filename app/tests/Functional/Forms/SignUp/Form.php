@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Forms;
+namespace App\Tests\Functional\Forms\SignUp;
 
-class SignUpForm extends AbstractForm
+use App\Tests\Functional\Forms\AbstractForm;
+
+class Form extends AbstractForm
 {
     const FIELD_FIRST_NAME = 'firstName';
 
