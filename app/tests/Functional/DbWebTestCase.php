@@ -41,38 +41,4 @@ class DbWebTestCase extends WebTestCase
         $this->em->close();
         parent::tearDown();
     }
-
-    /**
-     * Проверка наличия текста в уведомлении об успешной операции
-     *
-     * @param string  $text
-     * @param Crawler $crawler
-     */
-    protected function assertSuccessAlertContains(string $text, Crawler $crawler): void
-    {
-        $this->assertAlertContains('success', $text, $crawler);
-    }
-
-    /**
-     * Проверка наличия текста в уведомлении об операции с ошибкой
-     *
-     * @param string  $text
-     * @param Crawler $crawler
-     */
-    protected function assertDangerAlertContains(string $text, Crawler $crawler): void
-    {
-        $this->assertAlertContains('danger', $text, $crawler);
-    }
-
-    /**
-     * Проверка наличия текста в уведомлении по типу
-     *
-     * @param string  $type
-     * @param string  $text
-     * @param Crawler $crawler
-     */
-    protected function assertAlertContains(string $type, string $text, Crawler $crawler): void
-    {
-        $this->assertContains($text, $crawler->filter('.alert-' . $type)->text());
-    }
 }

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Auth\Login;
 
+use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Forms\Login\Form;
 use App\Tests\Functional\Helpers\AlertTestCaseHelper;
 use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
 use App\Tests\Functional\Helpers\UrlTestCaseHelper;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginTest extends DbWebTestCase
 {
@@ -37,9 +39,9 @@ class LoginTest extends DbWebTestCase
     }
 
     /**
-     * Отображение страницы с формой аутентификации
+     * Отображение страницы с формой аутентификации для гостей
      */
-    public function testShowForm()
+    public function testShowFormGuest()
     {
         $crawler = $this->url->get(self::BASE_URL);
         $this->assertResponseIsSuccessful();
@@ -48,6 +50,19 @@ class LoginTest extends DbWebTestCase
         $this->assertContains('Facebook', $crawler->filter('body')->text());
 
         $this->form->assertInputsExists($crawler);
+    }
+
+    /**
+     * Отображение страницы с формой аутентификации для аутентифицированных пользователей
+     */
+    public function testShowFormAuth()
+    {
+        $this->loadFixtures([UserFixture::class]);
+
+        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->url->get(self::BASE_URL);
+
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
     }
 
     /**

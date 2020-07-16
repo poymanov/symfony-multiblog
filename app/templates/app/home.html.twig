@@ -8,8 +8,10 @@
             <h1>Блоги обо всём</h1>
             <p class="lead text-muted">Здесь вы можете завести свой блог и писать о чём угодно!</p>
             <p>
-                <a href="{{ path('auth.signup') }}" class="btn btn-primary my-2">Зарегистрироваться</a>
-                <a href="{{ path('app_login') }}" class="btn btn-secondary my-2">Войти</a>
+                {% if not app.user %}
+                    <a href="{{ path('auth.signup') }}" class="btn btn-primary my-2">Зарегистрироваться</a>
+                    <a href="{{ path('app_login') }}" class="btn btn-secondary my-2">Войти</a>
+                {% endif %}
             </p>
         </div>
     </section>

@@ -2,12 +2,14 @@
 
 namespace App\Tests\Functional\Auth\SignUp\Request;
 
+use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Forms\SignUp\Form;
 use App\Tests\Functional\Helpers\AlertTestCaseHelper;
 use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
 use App\Tests\Functional\Helpers\UrlTestCaseHelper;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
+use Symfony\Component\HttpFoundation\Response;
 
 class RequestTest extends DbWebTestCase
 {
@@ -43,6 +45,19 @@ class RequestTest extends DbWebTestCase
         $this->assertContains('Facebook', $crawler->filter('body')->text());
 
         $this->form->assertInputsExists($crawler);
+    }
+
+    /**
+     * Отображение страницы с формой регистрации для аутентифицированных пользователей
+     */
+    public function testShowFormAuth()
+    {
+        $this->loadFixtures([UserFixture::class]);
+
+        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->url->get(self::BASE_URL);
+
+        $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
     }
 
     /**
