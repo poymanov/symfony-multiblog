@@ -7,11 +7,14 @@ namespace App\Controller\Auth;
 use App\Controller\ErrorHandler;
 use App\Model\User\UseCase\SignUp;
 use App\ReadModel\User\UserFetcher;
+use App\Security\LoginFormAuthenticator;
 use DomainException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 
 class SignUpController extends AbstractController
 {
@@ -82,7 +85,10 @@ class SignUpController extends AbstractController
     public function confirm(
         Request $request,
         string $token,
-        SignUp\Confirm\ByToken\Handler $handler
+        SignUp\Confirm\ByToken\Handler $handler,
+        UserProviderInterface $userProvider,
+        GuardAuthenticatorHandler $guardHandler,
+        LoginFormAuthenticator $authenticator
     ): Response
     {
         if (!$user = $this->users->findBySignUpConfirmToken($token)) {
@@ -95,7 +101,12 @@ class SignUpController extends AbstractController
         try {
             $handler->handle($command);
             $this->addFlash('success', 'Ваш email успешно подтвержден.');
-            return $this->redirectToRoute('home');
+            return $guardHandler->authenticateUserAndHandleSuccess(
+                $userProvider->loadUserByUsername($user->email),
+                $request,
+                $authenticator,
+                'main'
+            );
         } catch (DomainException $e) {
             $this->errors->handle($e);
             $this->addFlash('error', $e->getMessage());
