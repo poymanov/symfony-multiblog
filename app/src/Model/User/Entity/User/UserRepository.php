@@ -24,16 +24,18 @@ class UserRepository
 
     /**
      * UserRepository constructor.
+     *
      * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em = $em;
+        $this->em   = $em;
         $this->repo = $em->getRepository(User::class);
     }
 
     /**
      * @param string $token
+     *
      * @return User|null
      */
     public function findByConfirmToken(string $token): ?User
@@ -48,12 +50,13 @@ class UserRepository
 
     /**
      * @param Id $id
+     *
      * @return User
      */
     public function get(Id $id): User
     {
         if (!$user = $this->repo->find($id->getValue())) {
-            throw new EntityNotFoundException('User is not found.');
+            throw new EntityNotFoundException('Пользователь не найден.');
         }
 
         return $user;
@@ -61,12 +64,13 @@ class UserRepository
 
     /**
      * @param Email $email
+     *
      * @return User
      */
     public function getByEmail(Email $email): User
     {
         if (!$user = $this->repo->findOneBy(['email' => $email->getValue()])) {
-            throw new EntityNotFoundException('User is not found.');
+            throw new EntityNotFoundException('Пользователь не найден.');
         }
 
         return $user;
@@ -74,6 +78,7 @@ class UserRepository
 
     /**
      * @param Email $email
+     *
      * @return bool
      * @throws NoResultException
      * @throws NonUniqueResultException
@@ -90,6 +95,7 @@ class UserRepository
     /**
      * @param string $network
      * @param string $identity
+     *
      * @return bool
      * @throws NoResultException
      * @throws NonUniqueResultException

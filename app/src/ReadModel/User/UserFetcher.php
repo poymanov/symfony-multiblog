@@ -22,7 +22,7 @@ class UserFetcher
     private $repository;
 
     /**
-     * @param Connection $connection
+     * @param Connection             $connection
      * @param EntityManagerInterface $em
      */
     public function __construct(Connection $connection, EntityManagerInterface $em)
@@ -33,6 +33,7 @@ class UserFetcher
 
     /**
      * @param string $token
+     *
      * @return bool
      */
     public function existsByResetToken(string $token): bool
@@ -47,6 +48,7 @@ class UserFetcher
 
     /**
      * @param string $email
+     *
      * @return AuthView|null
      */
     public function findForAuthByEmail(string $email): ?AuthView
@@ -74,6 +76,7 @@ class UserFetcher
     /**
      * @param string $network
      * @param string $identity
+     *
      * @return AuthView|null
      */
     public function findForAuthByNetwork(string $network, string $identity): ?AuthView
@@ -102,6 +105,7 @@ class UserFetcher
 
     /**
      * @param string $email
+     *
      * @return ShortView|null
      */
     public function findByEmail(string $email): ?ShortView
@@ -121,6 +125,7 @@ class UserFetcher
 
     /**
      * @param string $token
+     *
      * @return ShortView|null
      */
     public function findBySignUpConfirmToken(string $token): ?ShortView
@@ -140,12 +145,13 @@ class UserFetcher
 
     /**
      * @param string $id
+     *
      * @return User
      */
     public function get(string $id): User
     {
         if (!$user = $this->repository->find($id)) {
-            throw new NotFoundException('User is not found.');
+            throw new NotFoundException('Пользователь не найден.');
         }
 
         return $user;

@@ -30,18 +30,20 @@ class ResetTokenSender
 
     /**
      * ResetTokenSender constructor.
+     *
      * @param MailerInterface $mailer
-     * @param Environment $twig
+     * @param Environment     $twig
      */
     public function __construct(MailerInterface $mailer, Environment $twig)
     {
         $this->mailer = $mailer;
-        $this->twig = $twig;
+        $this->twig   = $twig;
     }
 
     /**
-     * @param UserEmail $email
+     * @param UserEmail  $email
      * @param ResetToken $token
+     *
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
@@ -49,8 +51,8 @@ class ResetTokenSender
      */
     public function send(UserEmail $email, ResetToken $token): void
     {
-        $subject = 'Password resetting';
-        $email = (new Email())
+        $subject = 'Сброс пароля';
+        $email   = (new Email())
             ->subject($subject)
             ->to($email->getValue())
             ->html($this->twig->render('mail/user/reset.html.twig', ['token' => $token->getToken()]));
@@ -58,7 +60,7 @@ class ResetTokenSender
         try {
             $this->mailer->send($email);
         } catch (TransportException $e) {
-            throw new RuntimeException('Unable to send message.');
+            throw new RuntimeException('Невозможно отправить сообщение.');
         }
     }
 }
