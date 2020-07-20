@@ -8,7 +8,6 @@ use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\UrlTestCaseHelper;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
-use Symfony\Component\HttpFoundation\Response;
 
 class ProfileTest extends DbWebTestCase
 {

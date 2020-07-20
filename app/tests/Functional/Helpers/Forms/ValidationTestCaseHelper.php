@@ -25,6 +25,19 @@ class ValidationTestCaseHelper extends AbstractBaseTestCaseHelper
     }
 
     /**
+     * Проверка наличия сообщения о слишком длинном значении
+     *
+     * @param string  $field
+     * @param int     $maxLength
+     * @param Crawler $crawler
+     */
+    public function assertTooLongErrorMessage(string $field, int $maxLength, Crawler $crawler)
+    {
+        $errorMessage = 'Значение слишком длинное. Должно быть равно ' . $maxLength . ' символам или меньше.';
+        $this->assertFormErrorMessage($field, $errorMessage, $crawler);
+    }
+
+    /**
      * Проверка наличия сообщения о незаполненном поле
      *
      * @param string  $field
