@@ -46,3 +46,4 @@ security:
         - { path: ^/login, allow_if: "!is_authenticated()" }
         - { path: ^/signup, allow_if: "!is_authenticated()" }
         - { path: ^/reset, allow_if: "!is_authenticated()" }
+        - { path: ^/profile, allow_if: "is_authenticated()" }
