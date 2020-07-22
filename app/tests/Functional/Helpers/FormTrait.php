@@ -2,26 +2,51 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Helpers\Forms;
+namespace App\Tests\Functional\Helpers;
 
-use App\Tests\Functional\Forms\AbstractForm;
-use App\Tests\Functional\Helpers\AbstractBaseTestCaseHelper;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ValidationTestCaseHelper extends AbstractBaseTestCaseHelper
+trait FormTrait
 {
-    private AbstractForm $form;
+    /**
+     * Проверка - все поля формы присутствуют в ответе
+     *
+     * @param string  $field
+     * @param Crawler $crawler
+     */
+    public function assertInputExists(string $field, Crawler $crawler)
+    {
+        /** @var $testCase WebTestCase */
+        $testCase = $this;
+
+        $testCase->assertCount(1, $crawler->filter($field), 'В форме не найдено поле - ' . $field);
+    }
 
     /**
-     * @param WebTestCase  $testCase
-     * @param AbstractForm $form
+     * Отправка формы с данными
+     *
+     * @param FormDataDto $formData
+     * @param bool        $followRedirect
+     *
+     * @return Crawler
      */
-    public function __construct(WebTestCase $testCase, AbstractForm $form)
+    public function submit(FormDataDto $formData, bool $followRedirect = false): Crawler
     {
-        parent::__construct($testCase);
+        /** @var $testCase WebTestCase */
+        $testCase = $this;
 
-        $this->form = $form;
+        $client = $testCase->client;
+
+        $crawler = $client->submitForm($formData->getSubmitButtonTitle(), $formData->getData());
+
+        if ($followRedirect) {
+            $crawler = $client->followRedirect();
+        }
+
+        $testCase->assertResponseIsSuccessful();
+
+        return $crawler;
     }
 
     /**
@@ -52,9 +77,8 @@ class ValidationTestCaseHelper extends AbstractBaseTestCaseHelper
     /**
      * Проверка наличия сообщения о неправильном email
      *
-     * @param AbstractForm $form
-     * @param string       $field
-     * @param Crawler      $crawler
+     * @param string  $field
+     * @param Crawler $crawler
      */
     public function assertEmailErrorMessage(string $field, Crawler $crawler)
     {
@@ -83,9 +107,11 @@ class ValidationTestCaseHelper extends AbstractBaseTestCaseHelper
      */
     private function assertFormErrorMessage(string $field, string $message, Crawler $crawler)
     {
-        $fieldId           = '#' . $this->form->formName . '_' . $field;
+        /** @var $testCase WebTestCase */
+        $testCase = $this;
+
         $errorMessageClass = '.form-error-message';
 
-        $this->testCase->assertContains($message, $crawler->filter($fieldId)->parents()->first()->filter($errorMessageClass)->text());
+        $testCase->assertContains($message, $crawler->filter($field)->parents()->first()->filter($errorMessageClass)->text());
     }
 }

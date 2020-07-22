@@ -6,10 +6,7 @@ namespace App\Tests\Functional\Auth\Login;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\Login\Form;
-use App\Tests\Functional\Helpers\AlertTestCaseHelper;
-use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
-use App\Tests\Functional\Helpers\UrlTestCaseHelper;
+use App\Tests\Functional\Helpers\FormDataDto;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,37 +16,20 @@ class LoginTest extends DbWebTestCase
 
     private const BASE_URL = '/login';
 
-    private UrlTestCaseHelper $url;
-
-    private AlertTestCaseHelper $alert;
-
-    private FormTestCaseHelper $form;
-
-    private Form $loginForm;
-
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->url   = new UrlTestCaseHelper($this);
-        $this->alert = new AlertTestCaseHelper($this);
-        $this->loginForm = new Form();
-        $this->form  = new FormTestCaseHelper($this, $this->loginForm);
-    }
-
     /**
      * Отображение страницы с формой аутентификации для гостей
      */
     public function testShowFormGuest()
     {
-        $crawler = $this->url->get(self::BASE_URL);
+        $crawler = $this->get(self::BASE_URL);
         $this->assertResponseIsSuccessful();
 
         $this->assertContains('Войти', $crawler->filter('h1')->text());
         $this->assertContains('Facebook', $crawler->filter('body')->text());
 
-        $this->form->assertInputsExists($crawler);
+        $this->assertInputExists('input[id="email"]', $crawler);
+        $this->assertInputExists('input[id="password"]', $crawler);
+        $this->assertInputExists('input[id="_remember_me"]', $crawler);
     }
 
     /**
@@ -60,7 +40,7 @@ class LoginTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
         $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
     }
@@ -71,9 +51,9 @@ class LoginTest extends DbWebTestCase
     public function testSuccess(): void
     {
         $this->loadFixtures([LoginFixture::class]);
-        $this->url->get(self::BASE_URL);
-        $this->form->submit->success(true);
-        $this->url->assertCurrentUri();
+        $this->get(self::BASE_URL);
+        $this->submit($this->getSuccessData(), true);
+        $this->assertCurrentUri();
     }
 
     /**
@@ -82,10 +62,10 @@ class LoginTest extends DbWebTestCase
     public function testNotConfirmed(): void
     {
         $this->loadFixtures([LoginFixture::class]);
-        $this->url->get(self::BASE_URL);
-        $crawler = $this->form->submit->submit($this->loginForm->getNotConfirmedData(), true);
-        $this->url->assertCurrentUri('login');
-        $this->alert->assertDangerAlertContains('Учетная запись отключена.', $crawler);
+        $this->get(self::BASE_URL);
+        $crawler = $this->submit($this->getNotConfirmedData(), true);
+        $this->assertCurrentUri('login');
+        $this->assertDangerAlertContains('Учетная запись отключена.', $crawler);
     }
 
     /**
@@ -93,12 +73,12 @@ class LoginTest extends DbWebTestCase
      */
     public function testNotValidEmail(): void
     {
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->submit($this->loginForm->getNotExistedData(), true);
+        $crawler = $this->submit($this->getNotExistedData(), true);
 
-        $this->url->assertCurrentUri('login');
-        $this->alert->assertDangerAlertContains('Имя пользователя не найдено.', $crawler);
+        $this->assertCurrentUri('login');
+        $this->assertDangerAlertContains('Имя пользователя не найдено.', $crawler);
     }
 
     /**
@@ -108,11 +88,71 @@ class LoginTest extends DbWebTestCase
     {
         $this->loadFixtures([LoginFixture::class]);
 
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->notValid(true);
+        $crawler = $this->submit($this->getNotValidData(), true);
 
-        $this->url->assertCurrentUri('login');
-        $this->alert->assertDangerAlertContains('Недействительные аутентификационные данные.', $crawler);
+        $this->assertCurrentUri('login');
+        $this->assertDangerAlertContains('Недействительные аутентификационные данные.', $crawler);
+    }
+
+    /**
+     * Получение данных для успешного запроса
+     *
+     * @return FormDataDto
+     */
+    private function getSuccessData(): FormDataDto
+    {
+        $data = [
+            'email'    => 'mail@app.test',
+            'password' => '123qwe',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * Получение данных для запроса по неподтвержденному email
+     *
+     * @return FormDataDto
+     */
+    private function getNotConfirmedData(): FormDataDto
+    {
+        $data = [
+            'email'    => 'not-confirmed@app.test',
+            'password' => '123qwe',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * Получение данных для запроса по несуществующему email
+     *
+     * @return FormDataDto
+     */
+    private function getNotExistedData(): FormDataDto
+    {
+        $data = [
+            'email'    => 'not-email',
+            'password' => '123qwe',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * Получение данных для запроса по некорректному email
+     *
+     * @return FormDataDto
+     */
+    private function getNotValidData(): FormDataDto
+    {
+        $data = [
+            'email'    => 'mail@app.test',
+            'password' => '123',
+        ];
+
+        return new FormDataDto($data);
     }
 }

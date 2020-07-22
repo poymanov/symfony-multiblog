@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Tests\Functional\Helpers;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class AlertTestCaseHelper extends AbstractBaseTestCaseHelper
+trait AlertTrait
 {
     /**
      * Проверка наличия текста в уведомлении об успешной операции
@@ -39,6 +38,9 @@ class AlertTestCaseHelper extends AbstractBaseTestCaseHelper
      */
     public function assertAlertContains(string $type, string $text, Crawler $crawler): void
     {
-        $this->testCase->assertContains($text, $crawler->filter('.alert-' . $type)->text());
+        /** @var $testCase WebTestCase */
+        $testCase = $this;
+
+        $testCase->assertContains($text, $crawler->filter('.alert-' . $type)->text());
     }
 }

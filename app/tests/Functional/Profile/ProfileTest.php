@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Profile;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Helpers\UrlTestCaseHelper;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class ProfileTest extends DbWebTestCase
@@ -15,22 +14,13 @@ class ProfileTest extends DbWebTestCase
 
     private const BASE_URL = '/profile';
 
-    private UrlTestCaseHelper $url;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->url   = new UrlTestCaseHelper($this);
-    }
-
     /**
      * Профиль недоступен гостям
      */
     public function testShowProfileGuest()
     {
-        $this->url->get(self::BASE_URL, true);
-        $this->url->assertCurrentUri('login');
+        $this->get(self::BASE_URL, true);
+        $this->assertCurrentUri('login');
     }
 
     /**
@@ -41,7 +31,7 @@ class ProfileTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $crawler = $this->url->get(self::BASE_URL);
+        $crawler = $this->get(self::BASE_URL);
 
         $this->assertResponseIsSuccessful();
 

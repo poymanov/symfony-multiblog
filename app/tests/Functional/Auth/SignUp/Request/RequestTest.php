@@ -4,10 +4,7 @@ namespace App\Tests\Functional\Auth\SignUp\Request;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\SignUp\Form;
-use App\Tests\Functional\Helpers\AlertTestCaseHelper;
-use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
-use App\Tests\Functional\Helpers\UrlTestCaseHelper;
+use App\Tests\Functional\Helpers\FormDataDto;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,34 +14,21 @@ class RequestTest extends DbWebTestCase
 
     private const BASE_URL = '/signup';
 
-    private UrlTestCaseHelper $url;
-
-    private AlertTestCaseHelper $alert;
-
-    private FormTestCaseHelper $form;
-
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->url   = new UrlTestCaseHelper($this);
-        $this->alert = new AlertTestCaseHelper($this);
-        $this->form  = new FormTestCaseHelper($this, new Form());
-    }
-
     /**
      * Отображение страницы с формой регистрации
      */
     public function testShowForm(): void
     {
-        $crawler = $this->url->get(self::BASE_URL);
+        $crawler = $this->get(self::BASE_URL);
         $this->assertResponseIsSuccessful();
 
         $this->assertContains('Регистрация', $crawler->filter('h1')->text());
         $this->assertContains('Facebook', $crawler->filter('body')->text());
 
-        $this->form->assertInputsExists($crawler);
+        $this->assertInputExists('input[id="form_firstName"]', $crawler);
+        $this->assertInputExists('input[id="form_lastName"]', $crawler);
+        $this->assertInputExists('input[id="form_email"]', $crawler);
+        $this->assertInputExists('input[id="form_password"]', $crawler);
     }
 
     /**
@@ -55,7 +39,7 @@ class RequestTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
         $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
     }
@@ -65,10 +49,10 @@ class RequestTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->success(true);
-        $this->alert->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
+        $crawler = $this->submit($this->getSuccessData(), true);
+        $this->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
     }
 
     /**
@@ -76,14 +60,14 @@ class RequestTest extends DbWebTestCase
      */
     public function testNotValid(): void
     {
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->notValid();
+        $crawler = $this->submit($this->getNotValidData());
 
-        $this->form->validation->assertRequiredErrorMessage(Form::FIELD_FIRST_NAME, $crawler);
-        $this->form->validation->assertRequiredErrorMessage(Form::FIELD_LAST_NAME, $crawler);
-        $this->form->validation->assertEmailErrorMessage(Form::FIELD_EMAIL, $crawler);
-        $this->form->validation->assertShortPasswordErrorMessage(Form::FIELD_PASSWORD, $crawler);
+        $this->assertRequiredErrorMessage('#form_firstName', $crawler);
+        $this->assertRequiredErrorMessage('#form_lastName', $crawler);
+        $this->assertEmailErrorMessage('#form_email', $crawler);
+        $this->assertShortPasswordErrorMessage('#form_password', $crawler);
     }
 
     /**
@@ -92,10 +76,54 @@ class RequestTest extends DbWebTestCase
     public function testExists(): void
     {
         $this->loadFixtures([RequestFixture::class]);
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->existing();
+        $crawler = $this->submit($this->getExistingData());
+        $this->assertDangerAlertContains('Пользователь уже существует.', $crawler);
+    }
 
-        $this->alert->assertDangerAlertContains('Пользователь уже существует.', $crawler);
+    /**
+     * @return FormDataDto
+     */
+    public function getSuccessData(): FormDataDto
+    {
+        $data = [
+            'form[firstName]' => 'Tom',
+            'form[lastName]'  => 'Bent',
+            'form[email]'     => 'tom-bent@app.test',
+            'form[password]'  => '123qwe',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getNotValidData(): FormDataDto
+    {
+        $data = [
+            'form[firstName]' => '',
+            'form[lastName]'  => '',
+            'form[email]'     => 'not-email',
+            'form[password]'  => '123',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getExistingData(): FormDataDto
+    {
+        $data = [
+            'form[firstName]' => 'existing',
+            'form[lastName]'  => 'user',
+            'form[email]'     => 'existing-user@app.test',
+            'form[password]'  => '123qwe',
+        ];
+
+        return new FormDataDto($data);
     }
 }

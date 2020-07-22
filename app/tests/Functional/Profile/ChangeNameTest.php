@@ -6,10 +6,8 @@ namespace App\Tests\Functional\Profile;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\Profile\ChangeNameForm;
-use App\Tests\Functional\Helpers\AlertTestCaseHelper;
-use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
-use App\Tests\Functional\Helpers\UrlTestCaseHelper;
+use App\Tests\Functional\Helpers\FormDataDto;
+use Faker;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class ChangeNameTest extends DbWebTestCase
@@ -18,31 +16,13 @@ class ChangeNameTest extends DbWebTestCase
 
     private const BASE_URL = '/profile/name';
 
-    private UrlTestCaseHelper $url;
-
-    private AlertTestCaseHelper $alert;
-
-    private FormTestCaseHelper $form;
-
-    private ChangeNameForm $changeNameForm;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->url   = new UrlTestCaseHelper($this);
-        $this->alert = new AlertTestCaseHelper($this);
-        $this->changeNameForm = new ChangeNameForm();
-        $this->form  = new FormTestCaseHelper($this, $this->changeNameForm);
-    }
-
     /**
      * Отображение страницы с формой изменения имени для гостей
      */
     public function testShowForm(): void
     {
-        $crawler = $this->url->get(self::BASE_URL, true);
-        $this->url->assertCurrentUri('login');
+        $this->get(self::BASE_URL, true);
+        $this->assertCurrentUri('login');
     }
 
     /**
@@ -53,10 +33,12 @@ class ChangeNameTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $crawler = $this->url->get(self::BASE_URL);
+        $crawler = $this->get(self::BASE_URL);
 
         $this->assertContains('Изменить имя', $crawler->filter('h1')->text());
-        $this->form->assertInputsExists($crawler);
+
+        $this->assertInputExists('input[id="form_first"]', $crawler);
+        $this->assertInputExists('input[id="form_last"]', $crawler);
     }
 
     /**
@@ -67,12 +49,12 @@ class ChangeNameTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->submit($this->changeNameForm->getEmptyData());
+        $crawler = $this->submit($this->getEmptyData());
 
-        $this->form->validation->assertRequiredErrorMessage(ChangeNameForm::FIELD_FIRST, $crawler);
-        $this->form->validation->assertRequiredErrorMessage(ChangeNameForm::FIELD_LAST, $crawler);
+        $this->assertRequiredErrorMessage('#form_first', $crawler);
+        $this->assertRequiredErrorMessage('#form_last', $crawler);
     }
 
     /**
@@ -83,12 +65,12 @@ class ChangeNameTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->submit($this->changeNameForm->getLongData());
+        $crawler = $this->submit($this->getLongData());
 
-        $this->form->validation->assertTooLongErrorMessage(ChangeNameForm::FIELD_FIRST, 255, $crawler);
-        $this->form->validation->assertTooLongErrorMessage(ChangeNameForm::FIELD_LAST, 255, $crawler);
+        $this->assertTooLongErrorMessage('#form_first', 255, $crawler);
+        $this->assertTooLongErrorMessage('#form_last', 255, $crawler);
     }
 
     /**
@@ -99,9 +81,54 @@ class ChangeNameTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->success(true);
-        $this->alert->assertSuccessAlertContains('Имя изменено.', $crawler);
+        $crawler = $this->submit($this->getSuccessData(), true);
+        $this->assertSuccessAlertContains('Имя изменено.', $crawler);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getEmptyData(): FormDataDto
+    {
+        $data = [
+            'form[first]' => '',
+            'form[last]'  => '',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getLongData(): FormDataDto
+    {
+        $faker = Faker\Factory::create();
+
+        $longData = $faker->paragraph(10);
+
+        $data = [
+            'form[first]' => $longData,
+            'form[last]'  => $longData,
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getSuccessData(): FormDataDto
+    {
+        $faker = Faker\Factory::create();
+
+        $data = [
+            'form[first]' => $faker->firstName,
+            'form[last]'  => $faker->lastName,
+        ];
+
+        return new FormDataDto($data);
     }
 }

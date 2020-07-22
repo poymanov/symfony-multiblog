@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional;
 
+use App\Tests\Functional\Helpers\AlertTrait;
+use App\Tests\Functional\Helpers\FormTrait;
+use App\Tests\Functional\Helpers\UrlTrait;
 use Doctrine\DBAL\ConnectionException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 
 class DbWebTestCase extends WebTestCase
 {
+    use UrlTrait, AlertTrait, FormTrait;
+
     /**
      * @var EntityManagerInterface
      */

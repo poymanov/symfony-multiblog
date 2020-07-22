@@ -6,10 +6,7 @@ namespace App\Tests\Functional\Profile\Email\Request;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\Profile\ChangeEmailForm;
-use App\Tests\Functional\Helpers\AlertTestCaseHelper;
-use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
-use App\Tests\Functional\Helpers\UrlTestCaseHelper;
+use App\Tests\Functional\Helpers\FormDataDto;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class RequestTest extends DbWebTestCase
@@ -18,31 +15,13 @@ class RequestTest extends DbWebTestCase
 
     private const BASE_URL = '/profile/email';
 
-    private UrlTestCaseHelper $url;
-
-    private AlertTestCaseHelper $alert;
-
-    private FormTestCaseHelper $form;
-
-    private ChangeEmailForm $changeEmailForm;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->url   = new UrlTestCaseHelper($this);
-        $this->alert = new AlertTestCaseHelper($this);
-        $this->changeEmailForm = new ChangeEmailForm();
-        $this->form  = new FormTestCaseHelper($this, $this->changeEmailForm);
-    }
-
     /**
      * Отображение страницы с формой изменения имени для гостей
      */
     public function testShowForm(): void
     {
-        $this->url->get(self::BASE_URL, true);
-        $this->url->assertCurrentUri('login');
+        $this->get(self::BASE_URL, true);
+        $this->assertCurrentUri('login');
     }
 
     /**
@@ -53,10 +32,10 @@ class RequestTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $crawler = $this->url->get(self::BASE_URL);
+        $crawler = $this->get(self::BASE_URL);
 
         $this->assertContains('Изменить email', $crawler->filter('h1')->text());
-        $this->form->assertInputsExists($crawler);
+        $this->assertInputExists('input[id="form_email"]', $crawler);
     }
 
     /**
@@ -67,11 +46,11 @@ class RequestTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->submit($this->changeEmailForm->getEmptyData());
+        $crawler = $this->submit($this->getEmptyData());
 
-        $this->form->validation->assertRequiredErrorMessage(ChangeEmailForm::FIELD_EMAIL, $crawler);
+        $this->assertRequiredErrorMessage('#form_email', $crawler);
     }
 
     /**
@@ -82,11 +61,11 @@ class RequestTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->notValid();
+        $crawler = $this->submit($this->getNotValidData());
 
-        $this->form->validation->assertEmailErrorMessage(ChangeEmailForm::FIELD_EMAIL, $crawler);
+        $this->assertEmailErrorMessage('#form_email', $crawler);
     }
 
     /**
@@ -97,11 +76,11 @@ class RequestTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->existing();
+        $crawler = $this->submit($this->getExistingData());
 
-        $this->alert->assertDangerAlertContains('Email уже используется.', $crawler);
+        $this->assertDangerAlertContains('Email уже используется.', $crawler);
     }
 
     /**
@@ -112,12 +91,60 @@ class RequestTest extends DbWebTestCase
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL);
+        $this->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->success(true);
+        $crawler = $this->submit($this->getSuccessData(), true);
 
-        $this->url->assertCurrentUri('profile');
+        $this->assertCurrentUri('profile');
 
-        $this->alert->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
+        $this->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getEmptyData(): FormDataDto
+    {
+        $data = [
+            'form[email]' => '',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getSuccessData(): FormDataDto
+    {
+        $data = [
+            'form[email]' => 'user2@app.test',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getNotValidData(): FormDataDto
+    {
+        $data = [
+            'form[email]' => 'not-email',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getExistingData(): FormDataDto
+    {
+        $data = [
+            'form[email]' => 'user@app.test',
+        ];
+
+        return new FormDataDto($data);
     }
 }

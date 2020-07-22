@@ -6,10 +6,7 @@ namespace App\Tests\Functional\Auth\Reset\Reset;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\Reset\ResetForm;
-use App\Tests\Functional\Helpers\AlertTestCaseHelper;
-use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
-use App\Tests\Functional\Helpers\UrlTestCaseHelper;
+use App\Tests\Functional\Helpers\FormDataDto;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,35 +16,17 @@ class ResetTest extends DbWebTestCase
 
     private const BASE_URL = '/reset';
 
-    private UrlTestCaseHelper $url;
-
-    private AlertTestCaseHelper $alert;
-
-    private FormTestCaseHelper $form;
-
-    private ResetForm $resetForm;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->url       = new UrlTestCaseHelper($this);
-        $this->alert     = new AlertTestCaseHelper($this);
-        $this->resetForm = new ResetForm();
-        $this->form      = new FormTestCaseHelper($this, $this->resetForm);
-    }
-
     /**
      * Открытие формы с несуществующим токеном
      */
     public function testNotExistedToken()
     {
-        $crawler = $this->url->get(self::BASE_URL . '/123', true);
+        $crawler = $this->get(self::BASE_URL . '/123', true);
         $this->assertResponseIsSuccessful();
 
-        $this->url->assertCurrentUri();
+        $this->assertCurrentUri();
 
-        $this->alert->assertDangerAlertContains('Неправильный или уже подтвержденный токен.', $crawler);
+        $this->assertDangerAlertContains('Неправильный или уже подтвержденный токен.', $crawler);
     }
 
     /**
@@ -57,12 +36,12 @@ class ResetTest extends DbWebTestCase
     {
         $this->loadFixtures([ResetFixture::class]);
 
-        $crawler = $this->url->get(self::BASE_URL . '/123');
+        $crawler = $this->get(self::BASE_URL . '/123');
         $this->assertResponseIsSuccessful();
 
         $this->assertContains('Новый пароль', $crawler->filter('h1')->text());
 
-        $this->form->assertInputsExists($crawler);
+        $this->assertInputExists('input[id="form_password"]', $crawler);
     }
 
     /**
@@ -73,7 +52,7 @@ class ResetTest extends DbWebTestCase
         $this->loadFixtures([ResetFixture::class, UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
-        $this->url->get(self::BASE_URL . '/123');
+        $this->get(self::BASE_URL . '/123');
 
         $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());
     }
@@ -85,11 +64,11 @@ class ResetTest extends DbWebTestCase
     {
         $this->loadFixtures([ResetFixture::class]);
 
-        $this->url->get(self::BASE_URL . '/123');
+        $this->get(self::BASE_URL . '/123');
 
-        $crawler = $this->form->submit->notValid();
+        $crawler = $this->submit($this->getNotValidData());
 
-        $this->form->validation->assertShortPasswordErrorMessage(ResetForm::FIELD_PASSWORD, $crawler);
+        $this->assertShortPasswordErrorMessage('#form_password', $crawler);
     }
 
     /**
@@ -99,11 +78,11 @@ class ResetTest extends DbWebTestCase
     {
         $this->loadFixtures([ResetFixture::class]);
 
-        $this->url->get(self::BASE_URL . '/456');
+        $this->get(self::BASE_URL . '/456');
 
-        $crawler = $this->form->submit->success();
+        $crawler = $this->submit($this->getSuccessData());
 
-        $this->alert->assertDangerAlertContains('Токен сброса пароля уже истек.', $crawler);
+        $this->assertDangerAlertContains('Токен сброса пароля уже истек.', $crawler);
     }
 
     /**
@@ -113,10 +92,34 @@ class ResetTest extends DbWebTestCase
     {
         $this->loadFixtures([ResetFixture::class]);
 
-        $this->url->get(self::BASE_URL . '/123');
+        $this->get(self::BASE_URL . '/123');
 
-        $crawler = $this->form->submit->success(true);
-        $this->url->assertCurrentUri();
-        $this->alert->assertSuccessAlertContains('Пароль успешно изменен.', $crawler);
+        $crawler = $this->submit($this->getSuccessData(), true);
+        $this->assertCurrentUri();
+        $this->assertSuccessAlertContains('Пароль успешно изменен.', $crawler);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getSuccessData(): FormDataDto
+    {
+        $data = [
+            'form[password]' => '123qwe',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getNotValidData(): FormDataDto
+    {
+        $data = [
+            'form[password]' => '123',
+        ];
+
+        return new FormDataDto($data);
     }
 }

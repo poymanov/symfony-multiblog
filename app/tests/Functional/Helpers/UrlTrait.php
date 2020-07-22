@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Helpers;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class UrlTestCaseHelper extends AbstractBaseTestCaseHelper
+trait UrlTrait
 {
-    private const BASE_URL = 'http://localhost/';
-
     /**
      * Проверка соответствия текущего адреса
      *
@@ -17,7 +16,12 @@ class UrlTestCaseHelper extends AbstractBaseTestCaseHelper
      */
     public function assertCurrentUri(string $route = null): void
     {
-        $this->testCase->assertSame(self::BASE_URL . $route, $this->testCase->client->getRequest()->getUri());
+        /** @var $testCase WebTestCase */
+        $testCase = $this;
+
+        $baseUrl = 'http://localhost/';
+
+        $testCase->assertSame($baseUrl . $route, $testCase->client->getRequest()->getUri());
     }
 
     /**
@@ -30,10 +34,13 @@ class UrlTestCaseHelper extends AbstractBaseTestCaseHelper
      */
     public function get(string $uri, bool $followRedirect = false): Crawler
     {
-        $crawler = $this->testCase->client->request('GET', $uri);
+        /** @var $testCase WebTestCase */
+        $testCase = $this;
+
+        $crawler = $testCase->client->request('GET', $uri);
 
         if ($followRedirect) {
-            $crawler = $this->testCase->client->followRedirect();
+            $crawler = $testCase->client->followRedirect();
         }
 
         return $crawler;
