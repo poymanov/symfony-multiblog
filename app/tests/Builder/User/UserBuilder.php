@@ -72,6 +72,17 @@ class UserBuilder
     private $resetToken;
 
     /**
+     * @var Email
+     */
+    private $newEmail;
+
+    /**
+     * @var string
+     */
+    private $newEmailToken;
+
+
+    /**
      * UserBuilder constructor.
      *
      * @throws Exception
@@ -165,10 +176,30 @@ class UserBuilder
         return $clone;
     }
 
+    /**
+     * @param ResetToken $resetToken
+     *
+     * @return $this
+     */
     public function withResetToken(ResetToken $resetToken): self
     {
         $clone             = clone $this;
         $clone->resetToken = $resetToken;
+
+        return $clone;
+    }
+
+    /**
+     * @param string $newEmail
+     * @param string $newEmailToken
+     *
+     * @return $this
+     */
+    public function withNewEmail(Email $newEmail, string $newEmailToken): self
+    {
+        $clone       = clone $this;
+        $clone->newEmail = $newEmail;
+        $clone->newEmailToken = $newEmailToken;
 
         return $clone;
     }
@@ -214,6 +245,10 @@ class UserBuilder
 
         if ($this->resetToken) {
             $user->requestPasswordReset($this->resetToken, new DateTimeImmutable());
+        }
+
+        if ($this->newEmail && $this->newEmailToken) {
+            $user->requestEmailChanging($this->newEmail, $this->newEmailToken);
         }
 
         return $user;

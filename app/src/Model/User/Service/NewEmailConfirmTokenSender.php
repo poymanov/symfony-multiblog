@@ -49,7 +49,7 @@ class NewEmailConfirmTokenSender
      */
     public function send(UserEmail $email, string $token): void
     {
-        $subject = 'Email Confirmation';
+        $subject = 'Подтверждение смены email';
         $email = (new TemplatedEmail())
             ->subject($subject)
             ->to($email->getValue())
@@ -59,7 +59,7 @@ class NewEmailConfirmTokenSender
         try {
             $this->mailer->send($email);
         } catch (TransportException $e) {
-            throw new RuntimeException('Unable to send message.');
+            throw new RuntimeException('Невозможно отправить email.');
         }
     }
 

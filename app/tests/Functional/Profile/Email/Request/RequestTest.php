@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Profile;
+namespace App\Tests\Functional\Profile\Email\Request;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Forms\Profile\ChangeNameForm;
+use App\Tests\Functional\Forms\Profile\ChangeEmailForm;
 use App\Tests\Functional\Helpers\AlertTestCaseHelper;
 use App\Tests\Functional\Helpers\Forms\FormTestCaseHelper;
 use App\Tests\Functional\Helpers\UrlTestCaseHelper;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
 
-class ChangeNameTest extends DbWebTestCase
+class RequestTest extends DbWebTestCase
 {
     use FixturesTrait;
 
-    private const BASE_URL = '/profile/name';
+    private const BASE_URL = '/profile/email';
 
     private UrlTestCaseHelper $url;
 
@@ -24,7 +24,7 @@ class ChangeNameTest extends DbWebTestCase
 
     private FormTestCaseHelper $form;
 
-    private ChangeNameForm $changeNameForm;
+    private ChangeEmailForm $changeEmailForm;
 
     public function __construct()
     {
@@ -32,8 +32,8 @@ class ChangeNameTest extends DbWebTestCase
 
         $this->url   = new UrlTestCaseHelper($this);
         $this->alert = new AlertTestCaseHelper($this);
-        $this->changeNameForm = new ChangeNameForm();
-        $this->form  = new FormTestCaseHelper($this, $this->changeNameForm);
+        $this->changeEmailForm = new ChangeEmailForm();
+        $this->form  = new FormTestCaseHelper($this, $this->changeEmailForm);
     }
 
     /**
@@ -41,7 +41,7 @@ class ChangeNameTest extends DbWebTestCase
      */
     public function testShowForm(): void
     {
-        $crawler = $this->url->get(self::BASE_URL, true);
+        $this->url->get(self::BASE_URL, true);
         $this->url->assertCurrentUri('login');
     }
 
@@ -55,7 +55,7 @@ class ChangeNameTest extends DbWebTestCase
         $this->client->setServerParameters(UserFixture::userCredentials());
         $crawler = $this->url->get(self::BASE_URL);
 
-        $this->assertContains('Изменить имя', $crawler->filter('h1')->text());
+        $this->assertContains('Изменить email', $crawler->filter('h1')->text());
         $this->form->assertInputsExists($crawler);
     }
 
@@ -69,30 +69,43 @@ class ChangeNameTest extends DbWebTestCase
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->url->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->submit($this->changeNameForm->getEmptyData());
+        $crawler = $this->form->submit->submit($this->changeEmailForm->getEmptyData());
 
-        $this->form->validation->assertRequiredErrorMessage(ChangeNameForm::FIELD_FIRST, $crawler);
-        $this->form->validation->assertRequiredErrorMessage(ChangeNameForm::FIELD_LAST, $crawler);
+        $this->form->validation->assertRequiredErrorMessage(ChangeEmailForm::FIELD_EMAIL, $crawler);
     }
 
     /**
-     * Отправка формы с значениями больше допустимой длины
+     * Указан некорректный email
      */
-    public function testLong()
+    public function testNotValid(): void
     {
         $this->loadFixtures([UserFixture::class]);
 
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->url->get(self::BASE_URL);
 
-        $crawler = $this->form->submit->submit($this->changeNameForm->getLongData());
+        $crawler = $this->form->submit->notValid();
 
-        $this->form->validation->assertTooLongErrorMessage(ChangeNameForm::FIELD_FIRST, 255, $crawler);
-        $this->form->validation->assertTooLongErrorMessage(ChangeNameForm::FIELD_LAST, 255, $crawler);
+        $this->form->validation->assertEmailErrorMessage(ChangeEmailForm::FIELD_EMAIL, $crawler);
     }
 
     /**
-     * Успешная изменение данных
+     * Email уже существует
+     */
+    public function testExists(): void
+    {
+        $this->loadFixtures([UserFixture::class]);
+
+        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->url->get(self::BASE_URL);
+
+        $crawler = $this->form->submit->existing();
+
+        $this->alert->assertDangerAlertContains('Email уже используется.', $crawler);
+    }
+
+    /**
+     * Успешный запрос на изменение email
      */
     public function testSuccess(): void
     {
@@ -102,6 +115,9 @@ class ChangeNameTest extends DbWebTestCase
         $this->url->get(self::BASE_URL);
 
         $crawler = $this->form->submit->success(true);
-        $this->alert->assertSuccessAlertContains('Имя изменено.', $crawler);
+
+        $this->url->assertCurrentUri('profile');
+
+        $this->alert->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
     }
 }

@@ -118,6 +118,8 @@ class RequestTest extends DbWebTestCase
      */
     public function testSuccess()
     {
+        $this->loadFixtures([UserFixture::class]);
+
         $this->url->get(self::BASE_URL);
 
         $crawler = $this->form->submit->success(true);
