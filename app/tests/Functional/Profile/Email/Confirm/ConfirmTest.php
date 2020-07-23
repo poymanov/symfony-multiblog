@@ -6,12 +6,9 @@ namespace App\Tests\Functional\Profile\Email\Confirm;
 
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class ConfirmTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     private const BASE_URL = '/profile/email';
 
     /**
@@ -28,8 +25,6 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testChangingNotRequested()
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $crawler = $this->get(self::BASE_URL . '/123', true);
 
@@ -43,8 +38,6 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testInvalidToken()
     {
-        $this->loadFixtures([ConfirmFixture::class]);
-
         $this->client->setServerParameters(ConfirmFixture::userCredentials());
         $crawler = $this->get(self::BASE_URL . '/456', true);
 
@@ -58,8 +51,6 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testSuccess()
     {
-        $this->loadFixtures([ConfirmFixture::class]);
-
         $this->client->setServerParameters(ConfirmFixture::userCredentials());
         $this->get(self::BASE_URL . '/123', true);
         $this->assertCurrentUri();

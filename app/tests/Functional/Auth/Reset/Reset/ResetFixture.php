@@ -25,7 +25,7 @@ class ResetFixture extends Fixture
         $expiredToken = new ResetToken('456', new DateTimeImmutable());
 
         $requested = (new UserBuilder())
-            ->viaEmail()
+            ->viaEmail(new Email('request-reset-token@email.test'))
             ->confirmed()
             ->withResetToken($resetToken)
             ->build();

@@ -3,12 +3,9 @@
 namespace App\Tests\Functional;
 
 use App\DataFixtures\UserFixture;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class HomeTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     /**
      * Открытие главной страницы
      */
@@ -39,8 +36,6 @@ class HomeTest extends DbWebTestCase
      */
     public function testIndexAuthUser()
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
 
         $crawler = $this->get('/');

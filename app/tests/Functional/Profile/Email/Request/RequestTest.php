@@ -7,12 +7,9 @@ namespace App\Tests\Functional\Profile\Email\Request;
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class RequestTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     private const BASE_URL = '/profile/email';
 
     /**
@@ -29,8 +26,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $crawler = $this->get(self::BASE_URL);
 
@@ -43,8 +38,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testEmpty()
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL);
 
@@ -58,8 +51,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testNotValid(): void
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL);
 
@@ -73,8 +64,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testExists(): void
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL);
 
@@ -88,8 +77,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL);
 

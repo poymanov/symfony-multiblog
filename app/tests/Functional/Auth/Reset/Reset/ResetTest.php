@@ -12,8 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ResetTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     private const BASE_URL = '/reset';
 
     /**
@@ -21,7 +19,7 @@ class ResetTest extends DbWebTestCase
      */
     public function testNotExistedToken()
     {
-        $crawler = $this->get(self::BASE_URL . '/123', true);
+        $crawler = $this->get(self::BASE_URL . '/123456', true);
         $this->assertResponseIsSuccessful();
 
         $this->assertCurrentUri();
@@ -34,8 +32,6 @@ class ResetTest extends DbWebTestCase
      */
     public function testShowFormGuest()
     {
-        $this->loadFixtures([ResetFixture::class]);
-
         $crawler = $this->get(self::BASE_URL . '/123');
         $this->assertResponseIsSuccessful();
 
@@ -49,8 +45,6 @@ class ResetTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->loadFixtures([ResetFixture::class, UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL . '/123');
 
@@ -62,8 +56,6 @@ class ResetTest extends DbWebTestCase
      */
     public function testNotValidPassword()
     {
-        $this->loadFixtures([ResetFixture::class]);
-
         $this->get(self::BASE_URL . '/123');
 
         $crawler = $this->submit($this->getNotValidData());
@@ -76,8 +68,6 @@ class ResetTest extends DbWebTestCase
      */
     public function testExpiredToken()
     {
-        $this->loadFixtures([ResetFixture::class]);
-
         $this->get(self::BASE_URL . '/456');
 
         $crawler = $this->submit($this->getSuccessData());
@@ -90,8 +80,6 @@ class ResetTest extends DbWebTestCase
      */
     public function testSuccess()
     {
-        $this->loadFixtures([ResetFixture::class]);
-
         $this->get(self::BASE_URL . '/123');
 
         $crawler = $this->submit($this->getSuccessData(), true);

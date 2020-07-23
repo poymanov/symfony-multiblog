@@ -46,3 +46,6 @@ app-migrations:
 
 app-fixtures:
 	docker-compose run --rm php-cli php bin/console doctrine:fixtures:load --no-interaction
+
+app-fixtures-test:
+	docker-compose run --rm php-cli php bin/console doctrine:fixtures:load --no-interaction --env=test

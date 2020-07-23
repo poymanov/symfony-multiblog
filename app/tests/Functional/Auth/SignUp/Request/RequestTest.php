@@ -5,13 +5,10 @@ namespace App\Tests\Functional\Auth\SignUp\Request;
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Component\HttpFoundation\Response;
 
 class RequestTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     private const BASE_URL = '/signup';
 
     /**
@@ -36,8 +33,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL);
 
@@ -75,7 +70,6 @@ class RequestTest extends DbWebTestCase
      */
     public function testExists(): void
     {
-        $this->loadFixtures([RequestFixture::class]);
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getExistingData());

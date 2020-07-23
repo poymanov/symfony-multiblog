@@ -7,13 +7,10 @@ namespace App\Tests\Functional\Auth\Login;
 use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 use Symfony\Component\HttpFoundation\Response;
 
 class LoginTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     private const BASE_URL = '/login';
 
     /**
@@ -37,8 +34,6 @@ class LoginTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->loadFixtures([UserFixture::class]);
-
         $this->client->setServerParameters(UserFixture::userCredentials());
         $this->get(self::BASE_URL);
 
@@ -50,7 +45,6 @@ class LoginTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->loadFixtures([LoginFixture::class]);
         $this->get(self::BASE_URL);
         $this->submit($this->getSuccessData(), true);
         $this->assertCurrentUri();
@@ -61,7 +55,6 @@ class LoginTest extends DbWebTestCase
      */
     public function testNotConfirmed(): void
     {
-        $this->loadFixtures([LoginFixture::class]);
         $this->get(self::BASE_URL);
         $crawler = $this->submit($this->getNotConfirmedData(), true);
         $this->assertCurrentUri('login');
@@ -86,8 +79,6 @@ class LoginTest extends DbWebTestCase
      */
     public function testNotValidPassword(): void
     {
-        $this->loadFixtures([LoginFixture::class]);
-
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getNotValidData(), true);
@@ -119,7 +110,7 @@ class LoginTest extends DbWebTestCase
     private function getNotConfirmedData(): FormDataDto
     {
         $data = [
-            'email'    => 'not-confirmed@app.test',
+            'email'    => 'not-confirmed-confirm@app.test',
             'password' => '123qwe',
         ];
 

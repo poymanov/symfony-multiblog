@@ -43,7 +43,7 @@ class LoginFixture extends Fixture
         $manager->persist($confirmed);
 
         $notConfirmed = (new UserBuilder())
-            ->viaEmail(new Email('not-confirmed@app.test'), $hash)
+            ->viaEmail(new Email('not-confirmed-login@app.test'), $hash)
             ->build();
 
         $manager->persist($notConfirmed);

@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Auth\SignUp\Confirm;
 
 use App\Tests\Functional\DbWebTestCase;
-use Liip\TestFixturesBundle\Test\FixturesTrait;
 
 class ConfirmTest extends DbWebTestCase
 {
-    use FixturesTrait;
-
     private const BASE_URL = '/signup';
 
     /**
@@ -18,8 +15,6 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->loadFixtures([ConfirmFixture::class]);
-
         $crawler = $this->get(self::BASE_URL . '/not-confirmed-token', true);
         $this->assertResponseIsSuccessful();
 
@@ -45,9 +40,7 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testAlreadyConfirmed(): void
     {
-        $this->loadFixtures([ConfirmFixture::class]);
-
-        $crawler = $this->get(self::BASE_URL . '/token', true);
+        $crawler = $this->get(self::BASE_URL . '/confirmed-token', true);
 
         $this->assertResponseIsSuccessful();
 
