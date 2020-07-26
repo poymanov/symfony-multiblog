@@ -27,8 +27,10 @@ class ProfileController extends AbstractController
      */
     public function index(): Response
     {
+        $user = $this->users->get($this->getUser()->getId());
+
         return $this->render('app/profile/profile.html.twig', [
-            'user' => $this->users->findForAuthByEmail($this->getUser()->getUsername())
+            'user' => $user,
         ]);
     }
 }

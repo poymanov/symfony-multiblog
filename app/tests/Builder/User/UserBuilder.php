@@ -120,7 +120,7 @@ class UserBuilder
     public function viaNetwork(string $network = null, string $identity = null): self
     {
         $clone           = clone $this;
-        $clone->network  = $network ?? 'vk';
+        $clone->network  = $network ?? 'facebook';
         $clone->identity = $identity ?? '0001';
 
         return $clone;
