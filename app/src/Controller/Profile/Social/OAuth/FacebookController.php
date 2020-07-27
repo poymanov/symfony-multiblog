@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Profile\OAuth;
+namespace App\Controller\Profile\Social\OAuth;
 
 use App\Controller\ErrorHandler;
 use App\Model\User\UseCase\Network\Attach\Command;
@@ -63,11 +63,11 @@ class FacebookController extends AbstractController
         try {
             $handler->handle($command);
             $this->addFlash('success', 'Facebook подключен.');
-            return $this->redirectToRoute('profile');
+            return $this->redirectToRoute('profile.social');
         } catch (DomainException $e) {
             $this->errors->handle($e);
             $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('profile');
+            return $this->redirectToRoute('profile.social');
         }
     }
 }

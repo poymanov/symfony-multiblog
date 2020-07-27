@@ -10,7 +10,7 @@ use App\Tests\Functional\Helpers\FormDataDto;
 
 class NetworkTest extends DbWebTestCase
 {
-    private const BASE_URL = '/profile';
+    private const BASE_URL = '/profile/social';
 
     /**
      * Для пользователя без подключенного Facebook отображать кнопку добавления соц. сети
@@ -49,7 +49,7 @@ class NetworkTest extends DbWebTestCase
 
         $crawler = $this->submit($this->getDetachData(), true);
 
-        $this->assertCurrentUri('profile');
+        $this->assertCurrentUri('profile/social');
         $this->assertSuccessAlertContains('Facebook отключен.', $crawler);
     }
 

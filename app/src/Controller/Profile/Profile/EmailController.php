@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Profile;
+namespace App\Controller\Profile\Profile;
 
 use App\Controller\ErrorHandler;
 use App\Model\User\UseCase\Email;
@@ -66,7 +66,7 @@ class EmailController extends AbstractController
             }
         }
 
-        return $this->render('app/profile/email.html.twig', [
+        return $this->render('app/profile/profile/email.html.twig', [
             'form' => $form->createView(),
         ]);
     }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Profile;
+namespace App\Controller\Profile\Profile;
 
 use App\Controller\ErrorHandler;
 use App\Model\User\UseCase\Name;
@@ -64,7 +64,7 @@ class NameController extends AbstractController
             }
         }
 
-        return $this->render('app/profile/name.html.twig', [
+        return $this->render('app/profile/profile/name.html.twig', [
             'form' => $form->createView()
         ]);
     }
