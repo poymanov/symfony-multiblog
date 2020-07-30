@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Публикации{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <h1>Личный кабинет</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a class="nav-link text-info" href="{{ url('profile') }}">Профиль</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-info" href="{{ url('profile.social') }}">Социальные сети</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link bg-info active" href="{{ url('profile.posts') }}">Публикации</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-12 mb-2">
+                <a href="{{ path('profile.posts.create') }}" class="btn btn-outline-success">Добавить</a>
+            </div>
+            <div class="col-md-12">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Заголовок</th>
+                            <th>Статус</th>
+                            <th>Создано</th>
+                            <th>Опубликовано</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td><a href="{{ path('profile.posts.edit', {'id': post.id}) }}">{{ post.title }}</a></td>
+                            <td>{{ post_status(post.status) }}</td>
+                            <td>{{ post.created|date('d-m-Y') }}</td>
+                            <td>{% if post.published %}{{ post.published|date('d-m-Y') }}{% endif %}</td>
+{#                            <td><a href="{{ path('users.show', {'id': user.id}) }}">{{ user.name }}</a></td>#}
+{#                            <td>{{ user.email }}</td>#}
+{#                            <td>{{ user_role(user.role) }}</td>#}
+{#                            <td>{{ user_status(user.status) }}</td>#}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

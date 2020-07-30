@@ -1,0 +1,5 @@
+{% if status == 'draft' %}
+    <span class="badge badge-secondary">Черновик</span>
+{% elseif status == 'published' %}
+    <span class="badge badge-success">Опубликован</span>
+{% endif %}

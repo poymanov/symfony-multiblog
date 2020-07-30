@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактирование публикации{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <h1>Редактирование публикации</h1>
+            </div>
+
+            <div class="col-md-2 mb-2">
+                {% if post.status.isPublish() %}
+                    <form
+                            action="{{ path('profile.posts.draft', {id: post.id}) }}"
+                            method="post"
+                            onsubmit="return confirm('Вы уверены?')"
+                    >
+                        <input type="hidden" name="_method" value="PATCH" />
+                        <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
+                        <button type="submit" class="btn btn-sm btn-info">В черновики</button>
+                    </form>
+                {% else %}
+                    <form
+                            action="{{ path('profile.posts.publish', {id: post.id}) }}"
+                            method="post"
+                            onsubmit="return confirm('Вы уверены?')"
+                    >
+                        <input type="hidden" name="_method" value="PATCH" />
+                        <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
+                        <button type="submit" class="btn btn-sm btn-info">Опубликовать</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <div class="col-md-12 mb-4">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-success">Отправить</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

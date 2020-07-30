@@ -14,6 +14,8 @@ class UserFixture extends Fixture
 {
     private PasswordHasher $hasher;
 
+    public const REFERENCE_USER = 'main_user';
+
     /**
      * @param PasswordHasher $hasher
      */
@@ -32,7 +34,7 @@ class UserFixture extends Fixture
             ->build();
 
         $manager->persist($confirmedUser);
-
+        $this->setReference(self::REFERENCE_USER, $confirmedUser);
         $manager->flush();
     }
 

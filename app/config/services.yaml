@@ -15,7 +15,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Model/User/Entity,Entity,Migrations,Tests,Kernel.php}'
+        exclude: '../src/{DependencyInjection,Model/User/Entity,Model/Post/Entity,Entity,Migrations,Tests,Kernel.php}'
 
     Redis:
         class: Redis
@@ -32,6 +32,8 @@ services:
             - '@Redis'
 
     App\Model\User\Entity\User\UserRepository: ~
+    App\Model\Post\Entity\Post\PostRepository: ~
+    Ausi\SlugGenerator\SlugGenerator: ~
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class

@@ -34,10 +34,35 @@ trait UrlTrait
      */
     public function get(string $uri, bool $followRedirect = false): Crawler
     {
+        return $this->request('GET', $uri, $followRedirect);
+    }
+
+    /**
+     * PATCH-запрос на адрес, с возможностью следования за редиректом
+     *
+     * @param string $uri
+     * @param bool   $followRedirect
+     *
+     * @return Crawler
+     */
+    public function patch(string $uri, bool $followRedirect = false): Crawler
+    {
+        return $this->request('PATCH', $uri, $followRedirect);
+    }
+
+    /**
+     * Запрос на адрес с указанием метода запроса
+     *
+     * @param string $method
+     * @param string $uri
+     * @param bool   $followRedirect
+     */
+    private function request(string $method, string $uri, bool $followRedirect = false): Crawler
+    {
         /** @var $testCase WebTestCase */
         $testCase = $this;
 
-        $crawler = $testCase->client->request('GET', $uri);
+        $crawler = $testCase->client->request($method, $uri);
 
         if ($followRedirect) {
             $crawler = $testCase->client->followRedirect();
@@ -45,4 +70,6 @@ trait UrlTrait
 
         return $crawler;
     }
+
+
 }

@@ -2,7 +2,7 @@ FROM php:7.4-cli-alpine
 
 RUN apk add --no-cache postgresql-dev bash coreutils \
 	&& docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
-	&& docker-php-ext-install pdo_pgsql
+	&& docker-php-ext-install pdo_pgsql intl
 
 RUN apk update && apk add --no-cache unzip
 
