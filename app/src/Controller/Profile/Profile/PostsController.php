@@ -11,6 +11,7 @@ use App\Model\Post\UseCase\Draft;
 use App\Model\Post\UseCase\Edit;
 use App\Model\Post\UseCase\Publish;
 use App\ReadModel\Post\PostFetcher;
+use App\Security\Voter\Post\ProfilePostAccess;
 use DomainException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -94,9 +95,7 @@ class PostsController extends AbstractController
      */
     public function edit(Post $post, Request $request, Edit\Handler $handler): Response
     {
-        if ($post->getAuthorId()->getValue() !== $this->getUser()->getId()) {
-            throw new AccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted(ProfilePostAccess::MANAGE, $post);
 
         $command = Edit\Command::fromPost($post);
 
@@ -132,9 +131,7 @@ class PostsController extends AbstractController
      */
     public function publish(Post $post, Request $request, Publish\Handler $handler): Response
     {
-        if ($post->getAuthorId()->getValue() !== $this->getUser()->getId()) {
-            throw new AccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted(ProfilePostAccess::MANAGE, $post);
 
         $command = new Publish\Command($post->getId()->getValue());
 
@@ -162,9 +159,7 @@ class PostsController extends AbstractController
      */
     public function draft(Post $post, Request $request, Draft\Handler $handler): Response
     {
-        if ($post->getAuthorId()->getValue() !== $this->getUser()->getId()) {
-            throw new AccessDeniedException();
-        }
+        $this->denyAccessUnlessGranted(ProfilePostAccess::MANAGE, $post);
 
         $command = new Draft\Command($post->getId()->getValue());
 
