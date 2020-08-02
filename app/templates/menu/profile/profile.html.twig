@@ -1,0 +1,10 @@
+{% extends '@KnpMenu/menu.html.twig' %}
+
+{% block item %}
+    {% if item.displayed %}
+        {% if matcher.isCurrent(item) %}
+            {% do item.setLinkAttribute('class', 'nav-link bg-info active') %}
+        {% endif %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}
