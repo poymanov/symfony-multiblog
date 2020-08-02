@@ -11,17 +11,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 mb-2">
-                <ul class="nav nav-pills">
-                    <li class="nav-item">
-                        <a class="nav-link text-info" href="{{ url('profile') }}">Профиль</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-info" href="{{ url('profile.social') }}">Социальные сети</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link bg-info active" href="{{ url('profile.posts') }}">Публикации</a>
-                    </li>
-                </ul>
+                {{ knp_menu_render('profile_menu', {'template': 'menu/profile/profile.html.twig'}) }}
             </div>
             <div class="col-md-12 mb-2">
                 <a href="{{ path('profile.posts.create') }}" class="btn btn-outline-success">Добавить</a>
@@ -43,10 +33,6 @@
                             <td>{{ post_status(post.status) }}</td>
                             <td>{{ post.created|date('d-m-Y') }}</td>
                             <td>{% if post.published %}{{ post.published|date('d-m-Y') }}{% endif %}</td>
-{#                            <td><a href="{{ path('users.show', {'id': user.id}) }}">{{ user.name }}</a></td>#}
-{#                            <td>{{ user.email }}</td>#}
-{#                            <td>{{ user_role(user.role) }}</td>#}
-{#                            <td>{{ user_status(user.status) }}</td>#}
                         </tr>
                     {% endfor %}
                     </tbody>
