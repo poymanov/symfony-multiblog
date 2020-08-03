@@ -55,6 +55,11 @@ class PostBuilder
      */
     private $createdAt;
 
+    /**
+     * @var DateTimeImmutable
+     */
+    private $publishedAt;
+
     public function __construct()
     {
         $faker  = Faker\Factory::create();
@@ -81,12 +86,15 @@ class PostBuilder
     }
 
     /**
+     * @param DateTimeImmutable|null $publishedAt
+     *
      * @return $this
      */
-    public function published(): self
+    public function published(DateTimeImmutable $publishedAt = null): self
     {
         $clone         = clone $this;
         $clone->status = Status::published();
+        $clone->publishedAt = $publishedAt;
 
         return $clone;
     }
@@ -172,7 +180,7 @@ class PostBuilder
         );
 
         if ($this->status->isPublish()) {
-            $post->publish();
+            $post->publish($this->publishedAt);
         }
 
         return $post;

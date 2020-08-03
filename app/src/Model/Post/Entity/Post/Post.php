@@ -171,8 +171,9 @@ class Post
     /**
      * Публикация записи
      *
+     * @param DateTimeImmutable|null $publishedAt
      */
-    public function publish(): void
+    public function publish(DateTimeImmutable $publishedAt = null): void
     {
         if ($this->status->isPublish()) {
             throw new DomainException('Публикация уже опубликована.');
@@ -181,7 +182,12 @@ class Post
         $this->status = Status::published();
 
         if (empty($this->publishedAt)) {
-            $this->publishedAt = new DateTimeImmutable();
+
+            if (is_null($publishedAt)) {
+                $this->publishedAt = new DateTimeImmutable();
+            } else {
+                $this->publishedAt = $publishedAt;
+            }
         }
     }
 

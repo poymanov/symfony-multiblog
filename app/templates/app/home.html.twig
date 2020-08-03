@@ -15,4 +15,25 @@
             </p>
         </div>
     </section>
+    <section>
+        <div class="container">
+            <div class="row">
+                {% for post in posts %}
+                    <div class="col-md-12 mb-4">
+                        <div class="blog-post">
+                            <h2 class="blog-post-title"><a href="{{ path('post', {'alias': post.alias}) }}">{{ post.title }}</a></h2>
+                            <p class="blog-post-meta">
+                                {{ post.published|date('d-m-Y') }}, {{ post.author }}
+                            </p>
+                            <p>{{ post.preview }}</p>
+                            <p>
+                                <a href="{{ path('post', {'alias': post.alias}) }}" class="btn btn-outline-success">Читать дальше &#8594;</a>
+                            </p>
+                        </div>
+                    </div>
+                    <hr />
+                {% endfor %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

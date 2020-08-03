@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Tests\Functional;
+namespace App\Tests\Functional\Home;
 
 use App\DataFixtures\UserFixture;
+use App\Tests\Functional\DbWebTestCase;
 
-class HomeTest extends DbWebTestCase
+class MainTest extends DbWebTestCase
 {
     /**
      * Открытие главной страницы
@@ -25,10 +26,10 @@ class HomeTest extends DbWebTestCase
         $crawler = $this->get('/');
         $this->assertResponseIsSuccessful();
 
-        $this->assertCount(2, $crawler->filter('a[href="/signup"]'));
-        $this->assertCount(2, $crawler->filter('a[href="/login"]'));
-        $this->assertCount(0, $crawler->filter('a[href="/logout"]'));
-        $this->assertCount(0, $crawler->filter('a[href="/profile"]'));
+        $this->assertEquals(2, $crawler->filter('a[href="/signup"]')->count());
+        $this->assertEquals(2, $crawler->filter('a[href="/login"]')->count());
+        $this->assertEquals(0, $crawler->filter('a[href="/logout"]')->count());
+        $this->assertEquals(0, $crawler->filter('a[href="/profile"]')->count());
     }
 
     /**
@@ -41,10 +42,10 @@ class HomeTest extends DbWebTestCase
         $crawler = $this->get('/');
         $this->assertResponseIsSuccessful();
 
-        $this->assertCount(0, $crawler->filter('a[href="/signup"]'));
-        $this->assertCount(0, $crawler->filter('a[href="/login"]'));
-        $this->assertCount(1, $crawler->filter('a[href="/logout"]'));
-        $this->assertCount(1, $crawler->filter('a[href="/profile"]'));
+        $this->assertEquals(0, $crawler->filter('a[href="/signup"]')->count());
+        $this->assertEquals(0, $crawler->filter('a[href="/login"]')->count());
+        $this->assertEquals(1, $crawler->filter('a[href="/logout"]')->count());
+        $this->assertEquals(1, $crawler->filter('a[href="/profile"]')->count());
         $this->assertContains('First Last', $crawler->filter('body')->text());
     }
 }

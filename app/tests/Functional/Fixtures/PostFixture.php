@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Fixtures;
 
-use App\DataFixtures\UserFixture;
+use App\DataFixtures\UserFixture as CommonUserFixture;
 use App\Model\Post\Entity\Post\AuthorId;
 use App\Model\Post\Entity\Post\Id;
 use App\Model\User\Entity\User\User;
 use App\Tests\Builder\Post\PostBuilder;
+use DateInterval;
+use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Exception;
 
-class PostFixture extends Fixture
+class PostFixture extends Fixture implements DependentFixtureInterface
 {
     public const POST_1_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -30,7 +33,7 @@ class PostFixture extends Fixture
     public function load(ObjectManager $manager): void
     {
         /** @var User $user */
-        $user = $this->getReference(UserFixture::REFERENCE_USER);
+        $user = $this->getReference(CommonUserFixture::REFERENCE_USER);
 
         $draftPost = (new PostBuilder())
             ->withId(new Id(self::POST_1_ID))
@@ -71,6 +74,42 @@ class PostFixture extends Fixture
 
         $manager->persist($anotherPublishedPost);
         $manager->flush();
+
+        /** @var User $testUser */
+        $testUser = $this->getReference(UserFixture::REFERENCE_USER);
+
+        $testUserPublishedPost = (new PostBuilder())
+            ->published((new DateTimeImmutable())->sub(new DateInterval('P1D')))
+            ->withAuthorId(new AuthorId($testUser->getId()->getValue()))
+            ->withTitle('Published Test Title')
+            ->withPreviewText('Published Test Preview Text')
+            ->withText('Published Test Text')
+            ->build();
+
+        $manager->persist($testUserPublishedPost);
+        $manager->flush();
+
+        $anotherTestUserPublishedPost = (new PostBuilder())
+            ->published()
+            ->withAuthorId(new AuthorId($testUser->getId()->getValue()))
+            ->withTitle('Published Test Title 2')
+            ->withPreviewText('Published Test Preview Text 2')
+            ->withText('Published Test Text 2')
+            ->build();
+
+        $manager->persist($anotherTestUserPublishedPost);
+        $manager->flush();
+
+        $testUserDraftPost = (new PostBuilder())
+            ->draft()
+            ->withAuthorId(new AuthorId($testUser->getId()->getValue()))
+            ->withTitle('Draft Test Title')
+            ->withPreviewText('Draft Test Preview Text')
+            ->withText('Draft Test Text')
+            ->build();
+
+        $manager->persist($testUserDraftPost);
+        $manager->flush();
     }
 
     /**
@@ -80,6 +119,7 @@ class PostFixture extends Fixture
     {
         return [
             UserFixture::class,
+            CommonUserFixture::class,
         ];
     }
 }
