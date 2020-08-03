@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Auth\SignUp\Request;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,7 +32,7 @@ class RequestTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());

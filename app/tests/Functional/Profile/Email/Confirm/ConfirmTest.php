@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Email\Confirm;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 
 class ConfirmTest extends DbWebTestCase
@@ -25,7 +24,7 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testChangingNotRequested()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL . '/123', true);
 
         $this->assertCurrentUri('profile');
@@ -38,7 +37,7 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testInvalidToken()
     {
-        $this->client->setServerParameters(ConfirmFixture::userCredentials());
+        $this->auth(ConfirmFixture::userCredentials());
         $crawler = $this->get(self::BASE_URL . '/456', true);
 
         $this->assertCurrentUri('profile');
@@ -51,11 +50,11 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testSuccess()
     {
-        $this->client->setServerParameters(ConfirmFixture::userCredentials());
+        $this->auth(ConfirmFixture::userCredentials());
         $this->get(self::BASE_URL . '/123', true);
         $this->assertCurrentUri();
 
-        $this->client->setServerParameters([
+        $this->auth([
             'PHP_AUTH_USER' => 'test@test.ru',
             'PHP_AUTH_PW'   => '123qwe',
         ]);

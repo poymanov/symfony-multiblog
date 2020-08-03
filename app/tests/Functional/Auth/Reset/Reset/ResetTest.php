@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Auth\Reset\Reset;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 use Liip\TestFixturesBundle\Test\FixturesTrait;
@@ -45,7 +44,7 @@ class ResetTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL . '/123');
 
         $this->assertSame(Response::HTTP_FORBIDDEN, $this->client->getResponse()->getStatusCode());

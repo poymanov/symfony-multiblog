@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Email\Request;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 
@@ -26,7 +25,7 @@ class RequestTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertContains('Изменить email', $crawler->filter('h1')->text());
@@ -38,7 +37,7 @@ class RequestTest extends DbWebTestCase
      */
     public function testEmpty()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getEmptyData());
@@ -51,7 +50,7 @@ class RequestTest extends DbWebTestCase
      */
     public function testNotValid(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getNotValidData());
@@ -64,7 +63,7 @@ class RequestTest extends DbWebTestCase
      */
     public function testExists(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getExistingData());
@@ -77,7 +76,7 @@ class RequestTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getSuccessData(), true);

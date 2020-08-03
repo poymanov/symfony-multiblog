@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Posts;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 
 class ListTest extends DbWebTestCase
@@ -25,7 +24,7 @@ class ListTest extends DbWebTestCase
      */
     public function testCreateButton(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertEquals(1, $crawler->filter('a[href="/profile/posts/create"]')->count());
@@ -36,7 +35,7 @@ class ListTest extends DbWebTestCase
      */
     public function testShowPosts()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertContains('Test', $crawler->filter('body')->text());
@@ -50,7 +49,7 @@ class ListTest extends DbWebTestCase
      */
     public function testEditPostLinks()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
         $this->assertEquals(2, $crawler->filterXPath('//a[contains(@href, "/profile/posts/edit/")]')->count());
     }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 use Faker;
@@ -27,7 +26,7 @@ class ChangeNameTest extends DbWebTestCase
      */
     public function testShowFormAuth()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertContains('Изменить имя', $crawler->filter('h1')->text());
@@ -41,7 +40,7 @@ class ChangeNameTest extends DbWebTestCase
      */
     public function testEmpty()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getEmptyData());
@@ -55,7 +54,7 @@ class ChangeNameTest extends DbWebTestCase
      */
     public function testLong()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getLongData());
@@ -69,7 +68,7 @@ class ChangeNameTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getSuccessData(), true);

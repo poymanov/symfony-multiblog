@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Posts;
 
-use App\DataFixtures\UserFixture;
 use App\Model\Post\Entity\Post\Id;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Fixtures\PostFixture;
@@ -30,7 +29,7 @@ class DraftTest extends DbWebTestCase
      */
     public function testDraftNotExistedPost(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->patch(self::BASE_URL . Id::next());
 
         $this->assertResponseStatusCodeSame(404);
@@ -43,7 +42,7 @@ class DraftTest extends DbWebTestCase
      */
     public function testDraftAnotherUserPost(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->patch(self::BASE_URL . PostFixture::POST_4_ID);
 
         $this->assertResponseStatusCodeSame(403);
@@ -56,7 +55,7 @@ class DraftTest extends DbWebTestCase
      */
     public function testDraftGetRequest(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::POST_3_URL);
 
         $this->assertResponseStatusCodeSame(405);
@@ -67,7 +66,7 @@ class DraftTest extends DbWebTestCase
      */
     public function testDraftDrafted(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->patch(self::BASE_URL . PostFixture::POST_1_ID, true);
 
         $this->assertCurrentUri('profile/posts');
@@ -79,7 +78,7 @@ class DraftTest extends DbWebTestCase
      */
     public function testSuccess(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->patch(self::POST_3_URL, true);
 
         $this->assertCurrentUri('profile/posts');

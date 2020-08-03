@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Posts;
 
-use App\DataFixtures\UserFixture;
 use App\Model\Post\Entity\Post\Id;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Fixtures\PostFixture;
@@ -32,7 +31,7 @@ class EditTest extends DbWebTestCase
      */
     public function testEditNotExistedPost(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL . Id::next());
 
         $this->assertResponseStatusCodeSame(404);
@@ -45,7 +44,7 @@ class EditTest extends DbWebTestCase
      */
     public function testEditAnotherUserPost(): void
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL . PostFixture::POST_2_ID);
 
         $this->assertResponseStatusCodeSame(403);
@@ -56,14 +55,14 @@ class EditTest extends DbWebTestCase
      */
     public function testShowFormWithCurrentValues()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::POST_1_URL);
 
         $this->assertInputExists('input[id="form_title"]', $crawler);
         $this->assertInputExists('textarea[id="form_previewText"]', $crawler);
         $this->assertInputExists('textarea[id="form_text"]', $crawler);
 
-        $this->assertCount(1, $crawler->filter('input[value="Test"]'));
+        $this->assertEquals(1, $crawler->filter('input[value="Test"]')->count());
         $this->assertContains('Preview Text', $crawler->filter('textarea[id="form_previewText"]')->text());
         $this->assertContains('Text', $crawler->filter('textarea[id="form_text"]')->text());
     }
@@ -73,7 +72,7 @@ class EditTest extends DbWebTestCase
      */
     public function testEmpty()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::POST_1_URL);
 
         $crawler = $this->submit($this->getEmptyData());
@@ -88,7 +87,7 @@ class EditTest extends DbWebTestCase
      */
     public function testExisted()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::POST_1_URL);
 
         $crawler = $this->submit($this->getExistedData());
@@ -102,7 +101,7 @@ class EditTest extends DbWebTestCase
      */
     public function testSuccessWithNoChanges()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::POST_1_URL);
 
         $crawler = $this->submit($this->getSuccessWithNoChangesData(), true);
@@ -116,7 +115,7 @@ class EditTest extends DbWebTestCase
      */
     public function testSuccess()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::POST_1_URL);
 
         $crawler = $this->submit($this->getSuccessData(), true);
@@ -130,7 +129,7 @@ class EditTest extends DbWebTestCase
      */
     public function testDraftHavePublishButton()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::POST_1_URL);
 
         $this->assertEquals(1, $crawler->filter('form[action="/profile/posts/publish/' . PostFixture::POST_1_ID . '"]')->count());
@@ -142,7 +141,7 @@ class EditTest extends DbWebTestCase
      */
     public function testPublishedHaveDraftButton()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL . PostFixture::POST_3_ID);
 
         $this->assertEquals(1, $crawler->filter('form[action="/profile/posts/draft/' . PostFixture::POST_3_ID . '"]')->count());
@@ -154,7 +153,7 @@ class EditTest extends DbWebTestCase
      */
     public function testPublishedDontHavePublishButton()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL . PostFixture::POST_3_ID);
 
         $this->assertEquals(0, $crawler->filter('form[action="/profile/posts/publish/' . PostFixture::POST_3_ID . '"]')->count());
@@ -166,7 +165,7 @@ class EditTest extends DbWebTestCase
      */
     public function testDraftDontHaveDraftButton()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::POST_1_URL);
 
         $this->assertEquals(0, $crawler->filter('form[action="/profile/posts/draft/' . PostFixture::POST_1_ID . '"]')->count());

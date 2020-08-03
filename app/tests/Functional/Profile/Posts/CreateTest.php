@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Posts;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 
@@ -26,7 +25,7 @@ class CreateTest extends DbWebTestCase
      */
     public function testEmpty()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getEmptyData());
@@ -41,7 +40,7 @@ class CreateTest extends DbWebTestCase
      */
     public function testExisted()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getExistedData());
@@ -55,7 +54,7 @@ class CreateTest extends DbWebTestCase
      */
     public function testSuccess()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getSuccessData(), true);

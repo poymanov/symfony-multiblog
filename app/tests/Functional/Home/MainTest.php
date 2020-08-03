@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Home;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 
 class MainTest extends DbWebTestCase
@@ -37,7 +36,7 @@ class MainTest extends DbWebTestCase
      */
     public function testIndexAuthUser()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
 
         $crawler = $this->get('/');
         $this->assertResponseIsSuccessful();

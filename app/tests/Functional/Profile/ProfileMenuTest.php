@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -20,7 +19,7 @@ class ProfileMenuTest extends DbWebTestCase
      */
     public function testPages($url, $expectedTitle)
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get($url);
 
         $this->assertContains($expectedTitle, $this->getCurrentActiveItemText($crawler));

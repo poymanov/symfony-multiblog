@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 
 class ProfileTest extends DbWebTestCase
@@ -25,7 +24,7 @@ class ProfileTest extends DbWebTestCase
      */
     public function testShowAuthUserProfile()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertResponseIsSuccessful();

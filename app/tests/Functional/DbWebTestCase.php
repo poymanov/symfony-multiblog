@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use App\Tests\Functional\Helpers\AlertTrait;
+use App\Tests\Functional\Helpers\AuthTrait;
 use App\Tests\Functional\Helpers\FormTrait;
 use App\Tests\Functional\Helpers\UrlTrait;
 use Doctrine\DBAL\ConnectionException;
@@ -14,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DbWebTestCase extends WebTestCase
 {
-    use UrlTrait, AlertTrait, FormTrait;
+    use UrlTrait, AlertTrait, FormTrait, AuthTrait;
 
     /**
      * @var EntityManagerInterface

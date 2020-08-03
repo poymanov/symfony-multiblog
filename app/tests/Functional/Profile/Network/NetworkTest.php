@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Network;
 
-use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 
@@ -17,11 +16,11 @@ class NetworkTest extends DbWebTestCase
      */
     public function testShowAddFacebookNetwork()
     {
-        $this->client->setServerParameters(UserFixture::userCredentials());
+        $this->auth();
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertContains('Подключить Facebook', $crawler->filter('body')->text());
-        $this->assertCount(1, $crawler->filter('a[href="/attach"]'));
+        $this->assertEquals(1, $crawler->filter('a[href="/attach"]')->count());
     }
 
     /**
@@ -29,14 +28,14 @@ class NetworkTest extends DbWebTestCase
      */
     public function testShowRemoveFacebookNetwork()
     {
-        $this->client->setServerParameters(NetworkFixture::userCredentials());
+        $this->auth(NetworkFixture::userCredentials());
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertNotContains('Подключить Facebook', $crawler->filter('body')->text());
         $this->assertContains('Отключить Facebook', $crawler->filter('body')->text());
 
-        $this->assertCount(0, $crawler->filter('a[href="/attach"]'));
-        $this->assertCount(1, $crawler->filter('form[action="http://localhost/profile/oauth/detach/facebook/0001"]'));
+        $this->assertEquals(0, $crawler->filter('a[href="/attach"]')->count());
+        $this->assertEquals(1, $crawler->filter('form[action="http://localhost/profile/oauth/detach/facebook/0001"]')->count());
     }
 
     /**
@@ -44,7 +43,7 @@ class NetworkTest extends DbWebTestCase
      */
     public function testDetachFacebook()
     {
-        $this->client->setServerParameters(NetworkFixture::userCredentials());
+        $this->auth(NetworkFixture::userCredentials());
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getDetachData(), true);
