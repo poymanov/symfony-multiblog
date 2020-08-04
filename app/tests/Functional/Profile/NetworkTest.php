@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Profile\Network;
+namespace App\Tests\Functional\Profile;
 
 use App\Tests\Functional\DbWebTestCase;
+use App\Tests\Functional\Fixtures\UserFixture;
 use App\Tests\Functional\Helpers\FormDataDto;
 
 class NetworkTest extends DbWebTestCase
@@ -28,7 +29,7 @@ class NetworkTest extends DbWebTestCase
      */
     public function testShowRemoveFacebookNetwork()
     {
-        $this->auth(NetworkFixture::userCredentials());
+        $this->auth(UserFixture::networkUserCredentials());
         $crawler = $this->get(self::BASE_URL);
 
         $this->assertNotContains('Подключить Facebook', $crawler->filter('body')->text());
@@ -43,7 +44,7 @@ class NetworkTest extends DbWebTestCase
      */
     public function testDetachFacebook()
     {
-        $this->auth(NetworkFixture::userCredentials());
+        $this->auth(UserFixture::networkUserCredentials());
         $this->get(self::BASE_URL);
 
         $crawler = $this->submit($this->getDetachData(), true);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Auth\SignUp\Confirm;
+namespace App\Tests\Functional\Auth\SignUp;
 
 use App\Tests\Functional\DbWebTestCase;
 

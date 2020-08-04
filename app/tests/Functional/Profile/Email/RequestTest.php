@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Profile\Email\Request;
+namespace App\Tests\Functional\Profile\Email;
 
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;

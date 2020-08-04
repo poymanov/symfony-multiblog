@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Auth\Reset\Request;
+namespace App\Tests\Functional\Auth\Reset;
 
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;

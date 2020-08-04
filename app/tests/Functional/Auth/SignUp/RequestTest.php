@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Functional\Auth\SignUp\Request;
+namespace App\Tests\Functional\Auth\SignUp;
 
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;

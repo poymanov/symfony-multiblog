@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Profile\Email\Confirm;
+namespace App\Tests\Functional\Profile\Email;
 
 use App\Tests\Functional\DbWebTestCase;
+use App\Tests\Functional\Fixtures\UserFixture;
 
 class ConfirmTest extends DbWebTestCase
 {
@@ -37,7 +38,7 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testInvalidToken()
     {
-        $this->auth(ConfirmFixture::userCredentials());
+        $this->auth(UserFixture::invalidTokenUserCredentials());
         $crawler = $this->get(self::BASE_URL . '/456', true);
 
         $this->assertCurrentUri('profile');
@@ -50,7 +51,7 @@ class ConfirmTest extends DbWebTestCase
      */
     public function testSuccess()
     {
-        $this->auth(ConfirmFixture::userCredentials());
+        $this->auth(UserFixture::invalidTokenUserCredentials());
         $this->get(self::BASE_URL . '/123', true);
         $this->assertCurrentUri();
 
