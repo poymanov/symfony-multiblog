@@ -12,6 +12,8 @@ class ProfileListView
 
     public string $status;
 
+    public string $likes;
+
     public string $created;
 
     public ?string $published;

@@ -14,6 +14,8 @@ doctrine:
             post_post_id: 'App\Model\Post\Entity\Post\IdType'
             post_post_author_id: 'App\Model\Post\Entity\Post\AuthorIdType'
             post_post_status: 'App\Model\Post\Entity\Post\StatusType'
+            like_like_id: 'App\Model\Like\Entity\Like\IdType'
+            like_like_author_id: 'App\Model\Like\Entity\Like\AuthorIdType'
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -31,3 +33,9 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Model/Post/Entity'
                 prefix: 'App\Model\Post\Entity'
                 alias: Post
+            Like:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Model/Like/Entity'
+                prefix: 'App\Model\Like\Entity'
+                alias: Like

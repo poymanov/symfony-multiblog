@@ -20,6 +20,8 @@ class UserFixture extends Fixture
 {
     public const REFERENCE_USER = 'test_user';
 
+    public const REFERENCE_USER_2 = 'test_user_2';
+
     private ObjectManager $manager;
 
     private PasswordHasher $hasher;
@@ -43,11 +45,19 @@ class UserFixture extends Fixture
         $this->manager = $manager;
 
         $confirmedUser = $this->getConfirmedUser()
-            ->viaEmail(new Email('test-user@app.test'))
+            ->viaEmail(new Email('test-user@app.test'), $hash)
             ->withName(new Name('test-first-name', 'test-last-name'))
             ->build();
 
         $this->setReference(self::REFERENCE_USER, $confirmedUser);
+        $this->create($confirmedUser);
+
+        $confirmedUser = $this->getConfirmedUser()
+            ->viaEmail(new Email('test-user-2@app.test'))
+            ->withName(new Name('test-first-name-2', 'test-last-name-2'))
+            ->build();
+
+        $this->setReference(self::REFERENCE_USER_2, $confirmedUser);
         $this->create($confirmedUser);
 
         $invalidToken = $this->getConfirmedUser()
@@ -124,6 +134,17 @@ class UserFixture extends Fixture
             ->build();
 
         $this->create($notConfirmed);
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function testUserCredentials(): array
+    {
+        return [
+            'PHP_AUTH_USER' => 'test-user@app.test',
+            'PHP_AUTH_PW'   => '123qwe',
+        ];
     }
 
     /**

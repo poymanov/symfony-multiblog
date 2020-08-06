@@ -6,13 +6,16 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div class="blog-post">
+                <div class="blog-post mb-2">
                     <h1 class="blog-post-title">{{ post.title }}</h1>
                     <p class="blog-post-meta">
                         {{ post.publishedAt|date('d-m-Y') }}, {{ author.name.full }}
                     </p>
                     <p>{{ post.previewText }}</p>
                     <p>{{ post.text }}</p>
+                </div>
+                <div>
+                    {{ post_like_panel(post, app.user) }}
                 </div>
             </div>
         </div>

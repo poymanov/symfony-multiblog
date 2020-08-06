@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Post\Entity\Post;
+namespace App\Model\Like\Entity\Like;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 
-class AuthorIdType extends GuidType
+class IdType extends GuidType
 {
-    public const NAME = 'post_post_author_id';
+    public const NAME = 'like_like_id';
 
     /**
      * @param mixed $value
@@ -18,17 +18,17 @@ class AuthorIdType extends GuidType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        return $value instanceof AuthorId ? $value->getValue(): $value;
+        return $value instanceof Id ? $value->getValue(): $value;
     }
 
     /**
      * @param mixed $value
      * @param AbstractPlatform $platform
-     * @return AuthorId|mixed|null
+     * @return Id|mixed|null
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return !empty($value) ? new AuthorId($value): null;
+        return !empty($value) ? new Id($value): null;
     }
 
     /**

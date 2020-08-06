@@ -1,0 +1,21 @@
+{% if likes > 0 %}
+    <p class="text-info">Понравилось: <span class="likes-count">{{ likes }}</span></p>
+{% endif %}
+{% if mode == 'delete' %}
+    <form
+            action="{{ path('post.like.delete', {alias: alias}) }}"
+            method="post"
+    >
+        <input type="hidden" name="_method" value="DELETE"/>
+        <input type="hidden" name="token" value="{{ csrf_token('delete-like') }}"/>
+        <button type="submit" class="btn btn-sm btn-info">Больше не нравится</button>
+    </form>
+{% elseif mode == 'create' %}
+    <form
+            action="{{ path('post.like', {alias: alias}) }}"
+            method="post"
+    >
+        <input type="hidden" name="token" value="{{ csrf_token('like') }}"/>
+        <button type="submit" class="btn btn-sm btn-info">Понравилось</button>
+    </form>
+{% endif %}

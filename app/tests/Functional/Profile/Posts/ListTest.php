@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Profile\Posts;
 
 use App\Tests\Functional\DbWebTestCase;
+use App\Tests\Functional\Fixtures\UserFixture;
 
 class ListTest extends DbWebTestCase
 {
@@ -52,5 +53,17 @@ class ListTest extends DbWebTestCase
         $this->auth();
         $crawler = $this->get(self::BASE_URL);
         $this->assertEquals(2, $crawler->filterXPath('//a[contains(@href, "/profile/posts/edit/")]')->count());
+    }
+
+    /**
+     * Отображение количества лайков для публикаций
+     */
+    public function testShowPostsLikes()
+    {
+        $this->auth(UserFixture::testUserCredentials());
+        $crawler = $this->get(self::BASE_URL);
+        $this->assertEquals(1, $crawler->filter('tbody tr td:nth-child(3)')->text());
+        $this->assertEquals(0, $crawler->filter('tbody tr:nth-child(2) td:nth-child(3)')->text());
+        $this->assertEquals(0, $crawler->filter('tbody tr:nth-child(3) td:nth-child(3)')->text());
     }
 }

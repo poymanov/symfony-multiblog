@@ -38,6 +38,32 @@ trait UrlTrait
     }
 
     /**
+     * POST-запрос на адрес, с возможностью следования за редиректом
+     *
+     * @param string $uri
+     * @param bool   $followRedirect
+     *
+     * @return Crawler
+     */
+    public function post(string $uri, bool $followRedirect = false): Crawler
+    {
+        return $this->request('POST', $uri, $followRedirect);
+    }
+
+    /**
+     * DELETE-запрос на адрес, с возможностью следования за редиректом
+     *
+     * @param string $uri
+     * @param bool   $followRedirect
+     *
+     * @return Crawler
+     */
+    public function delete(string $uri, bool $followRedirect = false): Crawler
+    {
+        return $this->request('DELETE', $uri, $followRedirect);
+    }
+
+    /**
      * PATCH-запрос на адрес, с возможностью следования за редиректом
      *
      * @param string $uri

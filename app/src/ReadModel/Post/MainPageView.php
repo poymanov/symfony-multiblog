@@ -13,4 +13,6 @@ class MainPageView
     public string $preview;
 
     public string $author;
+
+    public string $likes;
 }

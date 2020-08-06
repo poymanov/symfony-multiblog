@@ -23,7 +23,7 @@
                         <div class="blog-post">
                             <h2 class="blog-post-title"><a href="{{ path('post', {'alias': post.alias}) }}">{{ post.title }}</a></h2>
                             <p class="blog-post-meta">
-                                {{ post.published|date('d-m-Y') }}, {{ post.author }}
+                                {{ post.published|date('d-m-Y') }}, {{ post.author }} {% if post.likes > 0 %}, понравилось: <span class="likes-count">{{ post.likes }}</span>{% endif %}
                             </p>
                             <p>{{ post.preview }}</p>
                             <p>

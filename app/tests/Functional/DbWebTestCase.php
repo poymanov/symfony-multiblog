@@ -12,6 +12,7 @@ use Doctrine\DBAL\ConnectionException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class DbWebTestCase extends WebTestCase
 {
@@ -45,5 +46,17 @@ class DbWebTestCase extends WebTestCase
         $this->em->getConnection()->rollBack();
         $this->em->close();
         parent::tearDown();
+    }
+
+    /**
+     * Получение содержимого страницы
+     *
+     * @param Crawler $crawler
+     *
+     * @return string
+     */
+    protected function getBodyText(Crawler $crawler): string
+    {
+        return $crawler->filter('body')->text();
     }
 }

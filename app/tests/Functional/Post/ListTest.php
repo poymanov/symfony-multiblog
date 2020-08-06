@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Home;
+namespace App\Tests\Functional\Post;
 
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Fixtures\PostFixture;
 use Symfony\Component\DomCrawler\Crawler;
 
-class PostTest extends DbWebTestCase
+class ListTest extends DbWebTestCase
 {
-    private const POST_DETAIL_BASE_URL = '/posts/';
-
     /**
      * Записи в черновиках не отображаются
      */
@@ -61,63 +59,19 @@ class PostTest extends DbWebTestCase
         });
 
         self::assertTrue(array_search('Published Test Title 2', $titles) < array_search('Published Test Title', $titles));
-
     }
 
     /**
-     * Несуществующий пост не открывается
+     * В списке публикаций отображаются лайки для публикаций с лайками
+     * Для публикаций без лайков ничего не отображается
      */
-    public function testNotExistedPost()
+    public function testLikesCount()
     {
-        $this->get(self::POST_DETAIL_BASE_URL . '123');
+        $crawler = $this->get('/');
 
-        $this->assertResponseStatusCodeSame(404);
-    }
+        $likeNode = $crawler->filterXPath('//*[contains(@class, "likes-count")]');
 
-    /**
-     * Запись из черновиков не открывается
-     */
-    public function testDraftPost()
-    {
-        $this->get(self::POST_DETAIL_BASE_URL . 'test');
-
-        $this->assertResponseStatusCodeSame(404);
-    }
-
-    /**
-     * Запись не открывается по uuid
-     */
-    public function testGetByPostUuid()
-    {
-        $this->get(self::POST_DETAIL_BASE_URL . PostFixture::POST_3_ID);
-
-        $this->assertResponseStatusCodeSame(404);
-    }
-
-    /**
-     * Просмотр страницы детальной информации по публикации
-     */
-    public function testPostDetails()
-    {
-        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'published-test-title');
-
-        $this->assertResponseIsSuccessful();
-
-        $this->assertContains('Published Test Title', $this->getBodyText($crawler));
-        $this->assertContains('Published Test Preview Text', $this->getBodyText($crawler));
-        $this->assertContains('Published Test Text', $this->getBodyText($crawler));
-        $this->assertContains('test-first-name test-last-name', $this->getBodyText($crawler));
-    }
-
-    /**
-     * Получение содержимого страницы
-     *
-     * @param Crawler $crawler
-     *
-     * @return string
-     */
-    private function getBodyText(Crawler $crawler): string
-    {
-        return $crawler->filter('body')->text();
+        $this->assertEquals(1, $likeNode->count());
+        $this->assertEquals('1', $likeNode->text());
     }
 }

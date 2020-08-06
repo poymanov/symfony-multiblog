@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Fixtures;
 
 use App\DataFixtures\UserFixture as CommonUserFixture;
+use App\Model\Like\Entity\Like\Like;
 use App\Model\Post\Entity\Post\AuthorId;
 use App\Model\Post\Entity\Post\Id;
 use App\Model\User\Entity\User\User;
@@ -26,6 +27,8 @@ class PostFixture extends Fixture implements DependentFixtureInterface
 
     public const POST_4_ID = '00000000-0000-0000-0000-000000000004';
 
+    public const REFERENCE_POST = 'post_with_like';
+
     /**
      * @inheritDoc
      * @throws Exception
@@ -33,7 +36,9 @@ class PostFixture extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         /** @var User $user */
+        /** @var User $anotherUser */
         $user = $this->getReference(CommonUserFixture::REFERENCE_USER);
+        $anotherUser = $this->getReference(UserFixture::REFERENCE_USER_2);
 
         $draftPost = (new PostBuilder())
             ->withId(new Id(self::POST_1_ID))
@@ -68,6 +73,7 @@ class PostFixture extends Fixture implements DependentFixtureInterface
 
         $anotherPublishedPost = (new PostBuilder())
             ->withId(new Id(self::POST_4_ID))
+            ->withAuthorId(new AuthorId($anotherUser->getId()->getValue()))
             ->published()
             ->withTitle('Another Published Test')
             ->build();
@@ -85,6 +91,8 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->withPreviewText('Published Test Preview Text')
             ->withText('Published Test Text')
             ->build();
+
+        $this->setReference(self::REFERENCE_POST, $testUserPublishedPost);
 
         $manager->persist($testUserPublishedPost);
         $manager->flush();

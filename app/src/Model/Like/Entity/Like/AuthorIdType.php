@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Post\Entity\Post;
+namespace App\Model\Like\Entity\Like;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\GuidType;
 
 class AuthorIdType extends GuidType
 {
-    public const NAME = 'post_post_author_id';
+    public const NAME = 'like_like_author_id';
 
     /**
      * @param mixed $value

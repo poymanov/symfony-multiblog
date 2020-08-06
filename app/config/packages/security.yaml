@@ -48,3 +48,5 @@ security:
         - { path: ^/signup, allow_if: "!is_authenticated()" }
         - { path: ^/reset, allow_if: "!is_authenticated()" }
         - { path: ^/profile, allow_if: "is_authenticated()" }
+        - { path: ^/posts/.*/like, allow_if: "is_authenticated()" }
+        - { path: ^/posts/.*/delete-like, allow_if: "is_authenticated()" }
