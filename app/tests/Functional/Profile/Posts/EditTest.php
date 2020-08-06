@@ -51,6 +51,17 @@ class EditTest extends DbWebTestCase
     }
 
     /**
+     * Отображение кнопки "Назад", для перехода в список всех публикаций
+     */
+    public function testBackLink()
+    {
+        $this->auth();
+        $crawler = $this->get(self::POST_1_URL);
+
+        $this->assertEquals(1, $crawler->filter('a[href="/profile/posts"]')->count());
+    }
+
+    /**
      * Отображение формы с заполненными значениями публикациями
      */
     public function testShowFormWithCurrentValues()
