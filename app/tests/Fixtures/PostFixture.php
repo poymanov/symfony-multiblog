@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Fixtures;
+namespace App\Tests\Fixtures;
 
 use App\DataFixtures\UserFixture as CommonUserFixture;
-use App\Model\Like\Entity\Like\Like;
 use App\Model\Post\Entity\Post\AuthorId;
 use App\Model\Post\Entity\Post\Id;
 use App\Model\User\Entity\User\User;

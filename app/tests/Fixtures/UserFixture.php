@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Fixtures;
+namespace App\Tests\Fixtures;
 
 use App\Model\User\Entity\User\Email;
 use App\Model\User\Entity\User\Name;

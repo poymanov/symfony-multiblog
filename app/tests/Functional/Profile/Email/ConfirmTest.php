@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Email;
 
+use App\Tests\Fixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Fixtures\UserFixture;
 
 class ConfirmTest extends DbWebTestCase
 {

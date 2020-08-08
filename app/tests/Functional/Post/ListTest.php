@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Post;
 
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Fixtures\PostFixture;
-use Symfony\Component\DomCrawler\Crawler;
 
 class ListTest extends DbWebTestCase
 {

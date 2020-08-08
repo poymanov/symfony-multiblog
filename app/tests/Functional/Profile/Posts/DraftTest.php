@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Profile\Posts;
 
 use App\Model\Post\Entity\Post\Id;
+use App\Tests\Fixtures\PostFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Fixtures\PostFixture;
 
 class DraftTest extends DbWebTestCase
 {

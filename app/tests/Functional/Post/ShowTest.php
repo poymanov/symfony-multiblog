@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Post;
 
+use App\Tests\Fixtures\PostFixture;
 use App\Tests\Functional\DbWebTestCase;
-use App\Tests\Functional\Fixtures\PostFixture;
 
 class ShowTest extends DbWebTestCase
 {

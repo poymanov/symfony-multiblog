@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Fixtures;
+namespace App\Tests\Fixtures;
 
 use App\DataFixtures\UserFixture as CommonUserFixture;
 use App\Model\Like\Entity\Like\AuthorId;
