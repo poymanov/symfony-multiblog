@@ -22,7 +22,7 @@ class UserFixture extends Fixture
 
     public const REFERENCE_USER_2 = 'test_user_2';
 
-    private ObjectManager $manager;
+    public const REFERENCE_USER_3 = 'test_user_3';
 
     private PasswordHasher $hasher;
 
@@ -42,15 +42,13 @@ class UserFixture extends Fixture
     {
         $hash = $this->hasher->hash('123qwe');
 
-        $this->manager = $manager;
-
         $confirmedUser = $this->getConfirmedUser()
             ->viaEmail(new Email('test-user@app.test'), $hash)
             ->withName(new Name('test-first-name', 'test-last-name'))
             ->build();
 
         $this->setReference(self::REFERENCE_USER, $confirmedUser);
-        $this->create($confirmedUser);
+        $manager->persist($confirmedUser);
 
         $confirmedUser = $this->getConfirmedUser()
             ->viaEmail(new Email('test-user-2@app.test'))
@@ -58,14 +56,14 @@ class UserFixture extends Fixture
             ->build();
 
         $this->setReference(self::REFERENCE_USER_2, $confirmedUser);
-        $this->create($confirmedUser);
+        $manager->persist($confirmedUser);
 
         $invalidToken = $this->getConfirmedUser()
             ->viaEmail(new Email('invalid-new-email-token-user@app.test'), $hash)
             ->withNewEmail(new Email('test@test.ru'), '123')
             ->build();
 
-        $this->create($invalidToken);
+        $manager->persist($invalidToken);
 
         $networkUser = $this->getConfirmedUser()
             ->viaEmail(new Email('user-with-network@app.test'), $hash)
@@ -73,32 +71,32 @@ class UserFixture extends Fixture
 
         $networkUser->attachNetwork('facebook', '0001');
 
-        $this->create($networkUser);
+        $manager->persist($networkUser);
 
         $confirmed = $this->getConfirmedUser()
             ->viaEmail(null, $hash)
             ->build();
 
-        $this->create($confirmed);
+        $manager->persist($confirmed);
 
         $notConfirmed = (new UserBuilder())
             ->viaEmail(new Email('not-confirmed-login@app.test'), $hash)
             ->build();
 
-        $this->create($notConfirmed);
+        $manager->persist($notConfirmed);
 
         $notConfirmed = (new UserBuilder())
             ->viaEmail(new Email('not-confirmed-email@email.test'))
             ->build();
 
-        $this->create($notConfirmed);
+        $manager->persist($notConfirmed);
 
         $alreadyRequested = $this->getConfirmedUser()
             ->viaEmail(new Email('already-requested@email.test'))
             ->withResetToken($this->tokenizer->generate())
             ->build();
 
-        $this->create($alreadyRequested);
+        $manager->persist($alreadyRequested);
 
         $resetToken   = new ResetToken('123', (new DateTimeImmutable())->add(new DateInterval('PT1H')));
         $expiredToken = new ResetToken('456', new DateTimeImmutable());
@@ -108,32 +106,41 @@ class UserFixture extends Fixture
             ->withResetToken($resetToken)
             ->build();
 
-        $this->create($requested);
+        $manager->persist($requested);
 
         $expired = $this->getConfirmedUser()
             ->viaEmail(new Email('expired-token@email.test'))
             ->withResetToken($expiredToken)
             ->build();
 
-        $this->create($expired);
+        $manager->persist($expired);
 
         $existing = $this->getConfirmedUser()
             ->viaEmail(new Email('existing-user@app.test'))
             ->build();
 
-        $this->create($existing);
+        $manager->persist($existing);
 
         $confirmed = $this->getConfirmedUser()
             ->viaEmail(new Email('confirmed@app.test'), null, 'confirmed-token')
             ->build();
 
-        $this->create($confirmed);
+        $manager->persist($confirmed);
 
         $notConfirmed = (new UserBuilder())
             ->viaEmail(new Email('not-confirmed-confirm@app.test'), null, 'not-confirmed-token')
             ->build();
 
-        $this->create($notConfirmed);
+        $manager->persist($notConfirmed);
+
+        $confirmedUser = $this->getConfirmedUser()
+            ->viaEmail(new Email('test-user-with-many-posts@app.test'), $hash)
+            ->build();
+
+        $this->setReference(self::REFERENCE_USER_3, $confirmedUser);
+        $manager->persist($confirmedUser);
+
+        $manager->flush();
     }
 
     /**
@@ -170,12 +177,14 @@ class UserFixture extends Fixture
     }
 
     /**
-     * @param User $user
+     * @return array
      */
-    private function create(User $user): void
+    public static function userWithManyPostsCredentials(): array
     {
-        $this->manager->persist($user);
-        $this->manager->flush();
+        return [
+            'PHP_AUTH_USER' => 'test-user-with-many-posts@app.test',
+            'PHP_AUTH_PW'   => '123qwe',
+        ];
     }
 
     /**

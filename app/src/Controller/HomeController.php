@@ -6,11 +6,14 @@ namespace App\Controller;
 
 use App\ReadModel\Post\PostFetcher;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
+    private const POSTS_PER_PAGE = 20;
+
     private PostFetcher $posts;
 
     /**
@@ -23,14 +26,19 @@ class HomeController extends AbstractController
 
     /**
      * @Route("/", name="home")
+     * @param Request $request
+     *
      * @return Response
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $posts = $this->posts->getAllForMainPage();
+        $pagination = $this->posts->getAllForMainPage(
+            $request->query->getInt('page', 1),
+            self::POSTS_PER_PAGE
+        );
 
         return $this->render('app/home.html.twig', [
-            'posts' => $posts
+            'pagination' => $pagination,
         ]);
     }
 }

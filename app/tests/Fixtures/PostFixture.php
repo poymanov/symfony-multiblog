@@ -36,7 +36,7 @@ class PostFixture extends Fixture implements DependentFixtureInterface
     {
         /** @var User $user */
         /** @var User $anotherUser */
-        $user = $this->getReference(CommonUserFixture::REFERENCE_USER);
+        $user        = $this->getReference(CommonUserFixture::REFERENCE_USER);
         $anotherUser = $this->getReference(UserFixture::REFERENCE_USER_2);
 
         $draftPost = (new PostBuilder())
@@ -49,7 +49,6 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($draftPost);
-        $manager->flush();
 
         $anotherDraftPost = (new PostBuilder())
             ->withId(new Id(self::POST_2_ID))
@@ -58,7 +57,6 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($anotherDraftPost);
-        $manager->flush();
 
         $publishedPost = (new PostBuilder())
             ->withId(new Id(self::POST_3_ID))
@@ -68,7 +66,6 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($publishedPost);
-        $manager->flush();
 
         $anotherPublishedPost = (new PostBuilder())
             ->withId(new Id(self::POST_4_ID))
@@ -78,7 +75,6 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($anotherPublishedPost);
-        $manager->flush();
 
         /** @var User $testUser */
         $testUser = $this->getReference(UserFixture::REFERENCE_USER);
@@ -94,7 +90,6 @@ class PostFixture extends Fixture implements DependentFixtureInterface
         $this->setReference(self::REFERENCE_POST, $testUserPublishedPost);
 
         $manager->persist($testUserPublishedPost);
-        $manager->flush();
 
         $anotherTestUserPublishedPost = (new PostBuilder())
             ->published()
@@ -105,7 +100,6 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($anotherTestUserPublishedPost);
-        $manager->flush();
 
         $testUserDraftPost = (new PostBuilder())
             ->draft()
@@ -116,6 +110,19 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($testUserDraftPost);
+
+        /** @var User $user */
+        $user = $this->getReference(UserFixture::REFERENCE_USER_3);
+
+        for ($i = 0; $i < 25; $i++) {
+            $post = (new PostBuilder())
+                ->published()
+                ->withAuthorId(new AuthorId($user->getId()->getValue()))
+                ->build();
+
+            $manager->persist($post);
+        }
+
         $manager->flush();
     }
 

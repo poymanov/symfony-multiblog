@@ -18,7 +18,7 @@
     <section>
         <div class="container">
             <div class="row">
-                {% for post in posts %}
+                {% for post in pagination %}
                     <div class="col-md-12 mb-4">
                         <div class="blog-post">
                             <h2 class="blog-post-title"><a href="{{ path('post', {'alias': post.alias}) }}">{{ post.title }}</a></h2>
@@ -33,6 +33,11 @@
                     </div>
                     <hr />
                 {% endfor %}
+                <div class="col-md-12">
+                    <div class="navigation">
+                        {{ knp_pagination_render(pagination) }}
+                    </div>
+                </div>
             </div>
         </div>
     </section>

@@ -40,7 +40,7 @@ class ListTest extends DbWebTestCase
      */
     public function testDetailsLinks()
     {
-        $crawler = $this->get('/');
+        $crawler = $this->get('/?page=2');
 
         $this->assertEquals(2, $crawler->filter('a[href="/posts/published-test-title"]')->count());
     }
@@ -50,7 +50,7 @@ class ListTest extends DbWebTestCase
      */
     public function testPublishedOrder()
     {
-        $crawler = $this->get('/');
+        $crawler = $this->get('/?page=2');
 
         $titles = $crawler->filter('h2.blog-post-title')->each(function ($node) {
             return $node->text();
@@ -65,11 +65,22 @@ class ListTest extends DbWebTestCase
      */
     public function testLikesCount()
     {
-        $crawler = $this->get('/');
+        $crawler = $this->get('/?page=2');
 
         $likeNode = $crawler->filterXPath('//*[contains(@class, "likes-count")]');
 
         $this->assertEquals(1, $likeNode->count());
         $this->assertEquals('1', $likeNode->text());
+    }
+
+    /**
+     * Публикации отображаются с учетом пагинации
+     */
+    public function testPagination()
+    {
+        $crawler = $this->get('/');
+
+        $this->assertEquals(20, $crawler->filter('.blog-post')->count());
+        $this->assertEquals(2, $crawler->filter('a[href="/?page=2"]')->count());
     }
 }
