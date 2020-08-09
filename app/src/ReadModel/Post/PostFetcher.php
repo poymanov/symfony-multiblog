@@ -36,11 +36,14 @@ class PostFetcher
     /**
      * @param string $id
      *
-     * @return array
+     * @param int    $page
+     * @param int    $perPage
+     *
+     * @return PaginationInterface
      */
-    public function allForUser(string $id): array
+    public function allForUser(string $id, int $page, int $perPage): PaginationInterface
     {
-        $stmt = $this->connection->createQueryBuilder()
+        $qb = $this->connection->createQueryBuilder()
             ->select(
                 'p.id',
                 'p.title',
@@ -52,12 +55,9 @@ class PostFetcher
             ->from('post_posts p')
             ->andWhere('p.author_id = :author_id')
             ->setParameter(':author_id', $id)
-            ->orderBy('p.created_at')
-            ->execute();
+            ->orderBy('p.created_at');
 
-        $stmt->setFetchMode(FetchMode::CUSTOM_OBJECT, ProfileListView::class);
-
-        return $stmt->fetchAll();
+        return $this->paginator->paginate($qb, $page, $perPage);
     }
 
     /**

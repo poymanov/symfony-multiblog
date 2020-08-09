@@ -66,4 +66,16 @@ class ListTest extends DbWebTestCase
         $this->assertEquals(0, $crawler->filter('tbody tr:nth-child(2) td:nth-child(3)')->text());
         $this->assertEquals(0, $crawler->filter('tbody tr:nth-child(3) td:nth-child(3)')->text());
     }
+
+    /**
+     * Публикации отображаются с учетом пагинации
+     */
+    public function testPagination()
+    {
+        $this->auth(UserFixture::userWithManyPostsCredentials());
+        $crawler = $this->get(self::BASE_URL);
+
+        $this->assertEquals(20, $crawler->filter('tbody tr')->count());
+        $this->assertEquals(2, $crawler->filter('a[href="' . self::BASE_URL .'?page=2"]')->count());
+    }
 }

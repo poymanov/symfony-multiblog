@@ -16,7 +16,7 @@
             <div class="col-md-12 mb-2">
                 <a href="{{ path('profile.posts.create') }}" class="btn btn-outline-success">Добавить</a>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 mb-2">
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -28,7 +28,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for post in posts %}
+                    {% for post in pagination %}
                         <tr>
                             <td><a href="{{ path('profile.posts.edit', {'id': post.id}) }}">{{ post.title }}</a></td>
                             <td>{{ post_status(post.status) }}</td>
@@ -39,6 +39,9 @@
                     {% endfor %}
                     </tbody>
                 </table>
+            </div>
+            <div class="col-md-12">
+                {{ knp_pagination_render(pagination) }}
             </div>
         </div>
     </div>

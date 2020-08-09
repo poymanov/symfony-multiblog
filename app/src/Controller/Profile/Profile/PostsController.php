@@ -25,6 +25,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
  */
 class PostsController extends AbstractController
 {
+    private const POSTS_PER_PAGE = 20;
+
     private ErrorHandler $errors;
 
     private PostFetcher $posts;
@@ -41,14 +43,19 @@ class PostsController extends AbstractController
 
     /**
      * @Route("", name="")
+     * @param Request $request
+     *
      * @return Response
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $posts = $this->posts->allForUser($this->getUser()->getId());
+        $pagination = $this->posts->allForUser(
+            $this->getUser()->getId(), $request->query->getInt('page', 1),
+            self::POSTS_PER_PAGE
+        );
 
         return $this->render('app/profile/posts/index.html.twig', [
-            'posts' => $posts,
+            'pagination' => $pagination,
         ]);
     }
 
