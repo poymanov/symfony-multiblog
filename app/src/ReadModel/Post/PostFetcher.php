@@ -6,8 +6,9 @@ namespace App\ReadModel\Post;
 
 use App\Model\Post\Entity\Post\Post;
 use App\Model\Post\Entity\Post\Status;
+use App\ReadModel\NotFoundException;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 
@@ -24,13 +25,19 @@ class PostFetcher
     private PaginatorInterface $paginator;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $repository;
+
+    /**
      * @param Connection         $connection
      * @param PaginatorInterface $paginator
      */
-    public function __construct(Connection $connection, PaginatorInterface $paginator)
+    public function __construct(Connection $connection, PaginatorInterface $paginator, EntityManagerInterface $em)
     {
         $this->connection = $connection;
         $this->paginator  = $paginator;
+        $this->repository = $em->getRepository(Post::class);
     }
 
     /**
@@ -49,6 +56,7 @@ class PostFetcher
                 'p.title',
                 'p.status',
                 '(SELECT COUNT(*) FROM like_likes WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as likes',
+                '(SELECT COUNT(*) FROM comment_comments WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as comments',
                 'p.created_at as created',
                 'p.published_at as published'
             )
@@ -75,7 +83,8 @@ class PostFetcher
                 'p.preview_text as preview',
                 'p.published_at as published',
                 'TRIM(CONCAT(u.name_first, \' \', u.name_last)) as author',
-                '(SELECT COUNT(*) FROM like_likes WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as likes'
+                '(SELECT COUNT(*) FROM like_likes WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as likes',
+                '(SELECT COUNT(*) FROM comment_comments WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as comments',
             )
             ->from('post_posts', 'p')
             ->innerJoin('p', 'user_users', 'u', 'p.author_id = u.id')
@@ -84,5 +93,19 @@ class PostFetcher
             ->orderBy('p.published_at', 'DESC');
 
         return $this->paginator->paginate($qb, $page, $perPage);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Post
+     */
+    public function get(string $id): Post
+    {
+        if (!$post = $this->repository->find($id)) {
+            throw new NotFoundException('Публикация не найдена.');
+        }
+
+        return $post;
     }
 }

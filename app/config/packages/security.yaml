@@ -50,3 +50,5 @@ security:
         - { path: ^/profile, allow_if: "is_authenticated()" }
         - { path: ^/posts/.*/like, allow_if: "is_authenticated()" }
         - { path: ^/posts/.*/delete-like, allow_if: "is_authenticated()" }
+        - { path: ^/posts/.*/comments/create, allow_if: "is_authenticated()" }
+        - { path: ^/posts/comments/.*/.*, allow_if: "is_authenticated()" }

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Comment\Entity\Comment\Entity;
 use App\Model\Post\Entity\Post\Post;
+use App\ReadModel\Comment\CommentFetcher;
 use App\ReadModel\User\UserFetcher;
 use App\Model\Like\UseCase\Like\Create;
 use App\Model\Like\UseCase\Like\Delete;
-use App\Service\Like;
 use DomainException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,18 +18,24 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PostController extends AbstractController
 {
+    private const COMMENTS_PER_PAGE = 5;
+
     private UserFetcher $users;
 
     private ErrorHandler $errors;
 
+    private CommentFetcher $comments;
+
     /**
-     * @param UserFetcher  $users
-     * @param ErrorHandler $errors
+     * @param UserFetcher    $users
+     * @param ErrorHandler   $errors
+     * @param CommentFetcher $comments
      */
-    public function __construct(UserFetcher $users, ErrorHandler $errors)
+    public function __construct(UserFetcher $users, ErrorHandler $errors, CommentFetcher $comments)
     {
-        $this->users  = $users;
-        $this->errors = $errors;
+        $this->users    = $users;
+        $this->errors   = $errors;
+        $this->comments = $comments;
     }
 
     /**
@@ -46,9 +53,16 @@ class PostController extends AbstractController
 
         $author = $this->users->get($post->getAuthorId()->getValue());
 
+        $comments = $this->comments->allForEntity(
+            new Entity(Post::class, $post->getId()->getValue()),
+            1,
+            self::COMMENTS_PER_PAGE
+        );
+
         return $this->render('app/post.html.twig', [
-            'post' => $post,
+            'post'   => $post,
             'author' => $author,
+            'comments' => $comments,
         ]);
     }
 
@@ -72,10 +86,12 @@ class PostController extends AbstractController
         try {
             $handler->handle($like);
             $this->addFlash('success', 'Публикация отмечена как понравившаяся.');
+
             return $this->redirectToRoute('post', ['alias' => $post->getAlias()]);
         } catch (DomainException $e) {
             $this->errors->handle($e);
             $this->addFlash('error', $e->getMessage());
+
             return $this->redirectToRoute('home');
         }
     }
@@ -100,10 +116,12 @@ class PostController extends AbstractController
         try {
             $handler->handle($like);
             $this->addFlash('success', 'Публикация удалена из списка понравившихся.');
+
             return $this->redirectToRoute('post', ['alias' => $post->getAlias()]);
         } catch (DomainException $e) {
             $this->errors->handle($e);
             $this->addFlash('error', $e->getMessage());
+
             return $this->redirectToRoute('home');
         }
     }

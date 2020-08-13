@@ -78,4 +78,14 @@ class ListTest extends DbWebTestCase
         $this->assertEquals(20, $crawler->filter('tbody tr')->count());
         $this->assertEquals(2, $crawler->filter('a[href="' . self::BASE_URL .'?page=2"]')->count());
     }
+
+    /**
+     * Отображение количества комментариев для публикаций
+     */
+    public function testShowPostsComments()
+    {
+        $this->auth(UserFixture::userWithManyCommentsCredentials());
+        $crawler = $this->get(self::BASE_URL);
+        $this->assertEquals(25, $crawler->filter('tbody tr td:nth-child(4)')->text());
+    }
 }

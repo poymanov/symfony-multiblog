@@ -1,0 +1,22 @@
+<div class="d-flex">
+
+    {% if showEditButton %}
+        <div class="mr-2">
+            <a href="{{ path('post.comments.edit', {'id': id}) }}" class="btn btn-sm btn-success">Редактировать</a>
+        </div>
+    {% endif %}
+
+    {% if showDeleteButton %}
+        <form
+                action="{{ path('post.comments.delete', {'id': id}) }}"
+                method="post"
+                onsubmit="return confirm('Вы уверены?')"
+        >
+            <input type="hidden" name="_method" value="DELETE"/>
+            <input type="hidden" name="token" value="{{ csrf_token('delete') }}"/>
+            <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+        </form>
+    {% endif %}
+</div>
+
+

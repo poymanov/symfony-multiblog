@@ -61,7 +61,6 @@ class ListTest extends DbWebTestCase
 
     /**
      * В списке публикаций отображаются лайки для публикаций с лайками
-     * Для публикаций без лайков ничего не отображается
      */
     public function testLikesCount()
     {
@@ -82,5 +81,18 @@ class ListTest extends DbWebTestCase
 
         $this->assertEquals(20, $crawler->filter('.blog-post')->count());
         $this->assertEquals(2, $crawler->filter('a[href="/?page=2"]')->count());
+    }
+
+    /**
+     * В списке публикаций отображается количество комментариев
+     */
+    public function testCommentsCount()
+    {
+        $crawler = $this->get('/');
+
+        $commentsNode = $crawler->filterXPath('//*[contains(@class, "comments-count")]');
+
+        $this->assertEquals(1, $commentsNode->count());
+        $this->assertEquals('25', $commentsNode->text());
     }
 }

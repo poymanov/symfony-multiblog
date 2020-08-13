@@ -28,6 +28,8 @@ class PostFixture extends Fixture implements DependentFixtureInterface
 
     public const REFERENCE_POST = 'post_with_like';
 
+    public const REFERENCE_POST_2 = 'post_with_comments';
+
     /**
      * @inheritDoc
      * @throws Exception
@@ -75,6 +77,8 @@ class PostFixture extends Fixture implements DependentFixtureInterface
             ->build();
 
         $manager->persist($anotherPublishedPost);
+
+        $this->setReference(self::REFERENCE_POST_2, $anotherPublishedPost);
 
         /** @var User $testUser */
         $testUser = $this->getReference(UserFixture::REFERENCE_USER);

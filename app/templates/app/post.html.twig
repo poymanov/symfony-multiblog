@@ -4,7 +4,7 @@
 
 {% block body %}
     <div class="container">
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-md-12">
                 <div class="blog-post mb-2">
                     <h1 class="blog-post-title">{{ post.title }}</h1>
@@ -18,6 +18,39 @@
                     {{ post_like_panel(post, app.user) }}
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <h2 class="comments-title">Обсуждения ({{ comments.getTotalItemCount }})</h2>
+            </div>
+            {% for comment in comments %}
+                <div class="col-md-12 mb-2">
+                    <div class="comment card">
+                        <div class="card-header d-flex justify-content-between">
+                            <div>
+                                {{ comment.author }}
+                            </div>
+                            <div>
+                                {{ comment.created_at|date('d-m-Y H:i')  }} {% if comment.updated_at %} / Отредактировано: {{ comment.updated_at|date('d-m-Y H:i') }} {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text mb-2">{{ comment.text }}</p>
+                            {{ comment_controls(comment, app.user) }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% if comments.getTotalItemCount > 5 %}
+                <div class="col-md-12 mb-2">
+                    <a href="{{ path('post.comments', {'alias': post.alias}) }}" class="d-block btn btn-info">Все обсуждения</a>
+                </div>
+            {% endif %}
+            {% if app.user %}
+                <div class="col-md-12">
+                    <a href="{{ path('post.comments.create', {'alias': post.alias}) }}" class="d-block btn btn-success">Добавить</a>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

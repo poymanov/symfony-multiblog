@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Обсуждения для {{ post.title }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Обсуждения для <a href="{{ path('post', {'alias': post.alias}) }}">{{ post.title }}</a></h1>
+            </div>
+            <div class="col-md-12 mb-4">
+                Всего: <span class="comment-count">{{ pagination.getTotalItemCount }}</span>
+            </div>
+            {% if app.user %}
+                <div class="col-md-12 mb-4">
+                    <a href="{{ path('post.comments.create', {'alias': post.alias}) }}" class="btn btn-sm btn-success">Добавить</a>
+                </div>
+            {% endif %}
+            <div class="col-md-12 mb-4">
+                <div class="row">
+                    {% for comment in pagination %}
+                        <div class="col-md-12 mb-2">
+                            <div class="comment card">
+                                <div class="card-header d-flex justify-content-between">
+                                    <div>
+                                        {{ comment.author }}
+                                    </div>
+                                    <div>
+                                        {{ comment.created_at|date('d-m-Y H:i')  }} {% if comment.updated_at %} / Отредактировано: {{ comment.updated_at|date('d-m-Y H:i') }} {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text mb-2">{{ comment.text }}</p>
+                                    {{ comment_controls(comment, app.user) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-md-12">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

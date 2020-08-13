@@ -75,4 +75,79 @@ class ShowTest extends DbWebTestCase
 
         $this->assertEquals(0, $crawler->filterXPath('//*[contains(@class, "likes-count")]')->count());
     }
+
+    /**
+     * Для публикации выводится несколько последних комментариев
+     */
+    public function testLastComments()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        $this->assertEquals(5, $crawler->filter('.comment')->count());
+    }
+
+    /**
+     * Комментарии выводятся в нужном порядке (по возрастанию даты создания)
+     */
+    public function testLastCommentsOrder()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        $texts = $crawler->filter('.comment .card-text')->each(function ($node) {
+            return $node->text();
+        });
+
+        self::assertTrue(array_search('First Comment', $texts) < array_search('Second Comment', $texts));
+    }
+
+    /**
+     * Вывод общего количества комментариев и ссылки на страницу всех комментариев
+     */
+    public function testCommentsCounter()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        self::assertContains('5', $crawler->filter('.comments-title')->text());
+    }
+
+    /**
+     * Вывод ссылки на страницу всех комментариев
+     */
+    public function testAllCommentsLink()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        self::assertEquals(1, $crawler->filter('a[href="' . self::POST_DETAIL_BASE_URL . 'another-published-test/comments' . '"]')->count());
+    }
+
+    /**
+     * Если комментариев мало - не выводить ссылку на страницу всех комментариев
+     */
+    public function testWithoutAllCommentsLink()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'published-test-text-2');
+
+        self::assertEquals(0, $crawler->filter('a[href="' . self::POST_DETAIL_BASE_URL . 'another-published-test/comments' . '"]')->count());
+    }
+
+    /**
+     * Гости не видят кнопку добавления нового комментария
+     */
+    public function testGuestAddCommentButton()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        self::assertEquals(0, $crawler->filter('a[href="' . self::POST_DETAIL_BASE_URL . 'another-published-test/comments/create' . '"]')->count());
+    }
+
+    /**
+     * Аутентифицированные пользователи видят кнопку добавления нового комментария
+     */
+    public function testAddCommentButton()
+    {
+        $this->auth();
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        self::assertEquals(1, $crawler->filter('a[href="' . self::POST_DETAIL_BASE_URL . 'another-published-test/comments/create' . '"]')->count());
+    }
 }

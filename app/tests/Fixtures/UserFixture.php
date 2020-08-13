@@ -51,7 +51,7 @@ class UserFixture extends Fixture
         $manager->persist($confirmedUser);
 
         $confirmedUser = $this->getConfirmedUser()
-            ->viaEmail(new Email('test-user-2@app.test'))
+            ->viaEmail(new Email('test-user-2@app.test'), $hash)
             ->withName(new Name('test-first-name-2', 'test-last-name-2'))
             ->build();
 
@@ -183,6 +183,17 @@ class UserFixture extends Fixture
     {
         return [
             'PHP_AUTH_USER' => 'test-user-with-many-posts@app.test',
+            'PHP_AUTH_PW'   => '123qwe',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function userWithManyCommentsCredentials(): array
+    {
+        return [
+            'PHP_AUTH_USER' => 'test-user-2@app.test',
             'PHP_AUTH_PW'   => '123qwe',
         ];
     }

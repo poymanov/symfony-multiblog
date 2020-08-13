@@ -23,6 +23,7 @@
                             <th>Заголовок</th>
                             <th>Статус</th>
                             <th>Понравилось</th>
+                            <th>Комментариев</th>
                             <th>Создано</th>
                             <th>Опубликовано</th>
                         </tr>
@@ -33,6 +34,7 @@
                             <td><a href="{{ path('profile.posts.edit', {'id': post.id}) }}">{{ post.title }}</a></td>
                             <td>{{ post_status(post.status) }}</td>
                             <td>{{ post.likes }}</td>
+                            <td>{{ post.comments }}</td>
                             <td>{{ post.created|date('d-m-Y') }}</td>
                             <td>{% if post.published %}{{ post.published|date('d-m-Y') }}{% endif %}</td>
                         </tr>
