@@ -24,6 +24,7 @@ class RequestTest extends TestCase
             $id = Id::next(),
             $date = new DateTimeImmutable(),
             $name = new Name('First', 'Last'),
+            $alias = 'first-last',
             $email = new Email('test@test.ru'),
             $hash = 'hash',
             $token = 'token'
@@ -34,6 +35,7 @@ class RequestTest extends TestCase
         self::assertEquals($id, $user->getId());
         self::assertEquals($date, $user->getDate());
         self::assertEquals($name, $user->getName());
+        self::assertEquals($alias, $user->getAlias());
         self::assertEquals($email, $user->getEmail());
         self::assertEquals($hash, $user->getPasswordHash());
         self::assertEquals($token, $user->getConfirmToken());

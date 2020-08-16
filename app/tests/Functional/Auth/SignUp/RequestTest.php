@@ -47,7 +47,12 @@ class RequestTest extends DbWebTestCase
 
         $crawler = $this->submit($this->getSuccessData(), true);
         $this->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
-        $this->assertIsInDatabase('user_users', ['email' => 'tom-bent@app.test']);
+        $this->assertIsInDatabase('user_users', [
+            'email'      => 'tom-bent@app.test',
+            'name_first' => 'Tom',
+            'name_last'  => 'Bent',
+            'alias'      => 'tom-bent',
+        ]);
     }
 
     /**
@@ -74,6 +79,17 @@ class RequestTest extends DbWebTestCase
 
         $crawler = $this->submit($this->getExistingData());
         $this->assertDangerAlertContains('Пользователь уже существует.', $crawler);
+    }
+
+    /**
+     * Alias уже существует
+     */
+    public function testAliasExists(): void
+    {
+        $this->get(self::BASE_URL);
+
+        $crawler = $this->submit($this->getExistingAliasData());
+        $this->assertDangerAlertContains('Пользователь с alias "first-last" уже существует.', $crawler);
     }
 
     /**
@@ -115,6 +131,21 @@ class RequestTest extends DbWebTestCase
             'form[firstName]' => 'existing',
             'form[lastName]'  => 'user',
             'form[email]'     => 'existing-user@app.test',
+            'form[password]'  => '123qwe',
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getExistingAliasData(): FormDataDto
+    {
+        $data = [
+            'form[firstName]' => 'First',
+            'form[lastName]'  => 'Last',
+            'form[email]'     => 'first-last@app.test',
             'form[password]'  => '123qwe',
         ];
 

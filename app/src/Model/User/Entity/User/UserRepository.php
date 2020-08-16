@@ -93,6 +93,22 @@ class UserRepository
     }
 
     /**
+     * @param string $alias
+     *
+     * @return bool
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function hasByAlias(string $alias): bool
+    {
+        return $this->repo->createQueryBuilder('t')
+                ->select('COUNT(t.id)')
+                ->andWhere('t.alias = :alias')
+                ->setParameter(':alias', $alias)
+                ->getQuery()->getSingleScalarResult() > 0;
+    }
+
+    /**
      * @param string $network
      * @param string $identity
      *

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Model\User\UseCase\SignUp\Request;
 
 use App\Model\Flusher;
+use App\Model\Post\Service\Slugger;
 use App\Model\User\Entity\User\Email;
 use App\Model\User\Entity\User\Id;
 use App\Model\User\Entity\User\Name;
@@ -51,24 +52,37 @@ class Handler
     private $flusher;
 
     /**
-     * Handler constructor.
-     * @param UserRepository $users
-     * @param PasswordHasher $hasher
-     * @param SignUpConfirmTokenizer $tokenizer
-     * @param SignUpConfirmTokenSender $sender
-     * @param Flusher $flusher
+     * @var Slugger
      */
-    public function __construct(UserRepository $users, PasswordHasher $hasher, SignUpConfirmTokenizer $tokenizer, SignUpConfirmTokenSender $sender, Flusher $flusher)
-    {
-        $this->users = $users;
-        $this->hasher = $hasher;
+    private Slugger $slugger;
+
+    /**
+     * @param UserRepository           $users
+     * @param PasswordHasher           $hasher
+     * @param SignUpConfirmTokenizer   $tokenizer
+     * @param SignUpConfirmTokenSender $sender
+     * @param Flusher                  $flusher
+     * @param Slugger                  $slugger
+     */
+    public function __construct(
+        UserRepository $users,
+        PasswordHasher $hasher,
+        SignUpConfirmTokenizer $tokenizer,
+        SignUpConfirmTokenSender $sender,
+        Flusher $flusher,
+        Slugger $slugger
+    ) {
+        $this->users     = $users;
+        $this->hasher    = $hasher;
         $this->tokenizer = $tokenizer;
-        $this->sender = $sender;
-        $this->flusher = $flusher;
+        $this->sender    = $sender;
+        $this->flusher   = $flusher;
+        $this->slugger   = $slugger;
     }
 
     /**
      * @param Command $command
+     *
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws TransportExceptionInterface
@@ -85,10 +99,19 @@ class Handler
             throw new DomainException('Пользователь уже существует.');
         }
 
+        $name = new Name($command->firstName, $command->lastName);
+
+        $alias = $this->slugger->create($name->getFull());
+
+        if ($this->users->hasByAlias($alias)) {
+            throw new DomainException('Пользователь с alias "' . $alias . '" уже существует.');
+        }
+
         $user = User::signUpByEmail(
             Id::next(),
             new DateTimeImmutable(),
-            new Name($command->firstName, $command->lastName),
+            $name,
+            $alias,
             $email,
             $this->hasher->hash($command->password),
             $token = $this->tokenizer->generate()

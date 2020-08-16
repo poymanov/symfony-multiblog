@@ -61,12 +61,14 @@ class UserFixture extends Fixture
         $invalidToken = $this->getConfirmedUser()
             ->viaEmail(new Email('invalid-new-email-token-user@app.test'), $hash)
             ->withNewEmail(new Email('test@test.ru'), '123')
+            ->withName(new Name('test-first-name-3', 'test-last-name-3'))
             ->build();
 
         $manager->persist($invalidToken);
 
         $networkUser = $this->getConfirmedUser()
             ->viaEmail(new Email('user-with-network@app.test'), $hash)
+            ->withName(new Name('test-first-name-4', 'test-last-name-4'))
             ->build();
 
         $networkUser->attachNetwork('facebook', '0001');
@@ -74,6 +76,7 @@ class UserFixture extends Fixture
         $manager->persist($networkUser);
 
         $confirmed = $this->getConfirmedUser()
+            ->withName(new Name('test-first-name-5', 'test-last-name-5'))
             ->viaEmail(null, $hash)
             ->build();
 
@@ -81,18 +84,21 @@ class UserFixture extends Fixture
 
         $notConfirmed = (new UserBuilder())
             ->viaEmail(new Email('not-confirmed-login@app.test'), $hash)
+            ->withName(new Name('test-first-name-6', 'test-last-name-6'))
             ->build();
 
         $manager->persist($notConfirmed);
 
         $notConfirmed = (new UserBuilder())
             ->viaEmail(new Email('not-confirmed-email@email.test'))
+            ->withName(new Name('test-first-name-7', 'test-last-name-7'))
             ->build();
 
         $manager->persist($notConfirmed);
 
         $alreadyRequested = $this->getConfirmedUser()
             ->viaEmail(new Email('already-requested@email.test'))
+            ->withName(new Name('test-first-name-8', 'test-last-name-8'))
             ->withResetToken($this->tokenizer->generate())
             ->build();
 
@@ -103,6 +109,7 @@ class UserFixture extends Fixture
 
         $requested = $this->getConfirmedUser()
             ->viaEmail(new Email('request-reset-token@email.test'))
+            ->withName(new Name('test-first-name-9', 'test-last-name-9'))
             ->withResetToken($resetToken)
             ->build();
 
@@ -110,6 +117,7 @@ class UserFixture extends Fixture
 
         $expired = $this->getConfirmedUser()
             ->viaEmail(new Email('expired-token@email.test'))
+            ->withName(new Name('test-first-name-10', 'test-last-name-10'))
             ->withResetToken($expiredToken)
             ->build();
 
@@ -117,24 +125,28 @@ class UserFixture extends Fixture
 
         $existing = $this->getConfirmedUser()
             ->viaEmail(new Email('existing-user@app.test'))
+            ->withName(new Name('test-first-name-11', 'test-last-name-11'))
             ->build();
 
         $manager->persist($existing);
 
         $confirmed = $this->getConfirmedUser()
             ->viaEmail(new Email('confirmed@app.test'), null, 'confirmed-token')
+            ->withName(new Name('test-first-name-12', 'test-last-name-12'))
             ->build();
 
         $manager->persist($confirmed);
 
         $notConfirmed = (new UserBuilder())
             ->viaEmail(new Email('not-confirmed-confirm@app.test'), null, 'not-confirmed-token')
+            ->withName(new Name('test-first-name-13', 'test-last-name-13'))
             ->build();
 
         $manager->persist($notConfirmed);
 
         $confirmedUser = $this->getConfirmedUser()
             ->viaEmail(new Email('test-user-with-many-posts@app.test'), $hash)
+            ->withName(new Name('test-first-name-14', 'test-last-name-14'))
             ->build();
 
         $this->setReference(self::REFERENCE_USER_3, $confirmedUser);

@@ -32,6 +32,11 @@ class UserBuilder
     private $name;
 
     /**
+     * @var string
+     */
+    private $alias;
+
+    /**
      * @var Email
      */
     private $email;
@@ -164,6 +169,19 @@ class UserBuilder
     }
 
     /**
+     * @param string $alias
+     *
+     * @return $this
+     */
+    public function withAlias(string $alias): self
+    {
+        $clone        = clone $this;
+        $clone->alias = $alias;
+
+        return $clone;
+    }
+
+    /**
      * @param Role $role
      *
      * @return $this
@@ -197,8 +215,8 @@ class UserBuilder
      */
     public function withNewEmail(Email $newEmail, string $newEmailToken): self
     {
-        $clone       = clone $this;
-        $clone->newEmail = $newEmail;
+        $clone                = clone $this;
+        $clone->newEmail      = $newEmail;
         $clone->newEmailToken = $newEmailToken;
 
         return $clone;
@@ -211,10 +229,18 @@ class UserBuilder
     public function build(): User
     {
         if ($this->email) {
+
+            if ($this->alias) {
+                $alias = $this->alias;
+            } else {
+                $alias = strtolower($this->name->getFirst()) . '-' . strtolower($this->name->getLast());
+            }
+
             $user = User::signUpByEmail(
                 $this->id,
                 $this->date,
                 $this->name,
+                $alias,
                 $this->email,
                 $this->hash,
                 $this->token

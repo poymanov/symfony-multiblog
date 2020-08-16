@@ -65,6 +65,18 @@ class ChangeNameTest extends DbWebTestCase
     }
 
     /**
+     * Изменение имени и создание alias, который уже существует
+     */
+    public function testExistedAlias()
+    {
+        $this->auth();
+        $this->get(self::BASE_URL);
+
+        $crawler = $this->submit($this->getExistedAliasData());
+        $this->assertDangerAlertContains('Пользователь с alias "first-last" уже существует.', $crawler);
+    }
+
+    /**
      * Успешная изменение данных
      */
     public function testSuccess(): void
@@ -76,9 +88,10 @@ class ChangeNameTest extends DbWebTestCase
         $this->assertSuccessAlertContains('Имя изменено.', $crawler);
 
         $this->assertIsInDatabase('user_users', [
-            'id'     => UserFixture::USER_1_ID,
+            'id'         => UserFixture::USER_1_ID,
             'name_first' => 'New First Name',
-            'name_last' => 'New Last Name',
+            'name_last'  => 'New Last Name',
+            'alias'      => 'new-first-name-new-last-name',
         ]);
     }
 
@@ -107,6 +120,21 @@ class ChangeNameTest extends DbWebTestCase
         $data = [
             'form[first]' => $longData,
             'form[last]'  => $longData,
+        ];
+
+        return new FormDataDto($data);
+    }
+
+    /**
+     * @return FormDataDto
+     */
+    public function getExistedAliasData(): FormDataDto
+    {
+        $faker = Faker\Factory::create();
+
+        $data = [
+            'form[first]' => 'First',
+            'form[last]'  => 'Last',
         ];
 
         return new FormDataDto($data);

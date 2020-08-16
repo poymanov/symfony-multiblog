@@ -64,6 +64,12 @@ class User
     private $name;
 
     /**
+     * @var string
+     * @ORM\Column(type="string", nullable=false, unique=true)
+     */
+    private $alias;
+
+    /**
      * @var Email|null
      * @ORM\Column(type="user_user_email", name="new_email", nullable=true)
      */
@@ -107,52 +113,60 @@ class User
     private $version;
 
     /**
-     * @param Id $id
+     * @param Id                $id
      * @param DateTimeImmutable $date
-     * @param Name $name
+     * @param Name              $name
      */
     private function __construct(Id $id, DateTimeImmutable $date, Name $name)
     {
-        $this->id = $id;
-        $this->date = $date;
-        $this->name = $name;
-        $this->role = Role::user();
+        $this->id       = $id;
+        $this->date     = $date;
+        $this->name     = $name;
+        $this->role     = Role::user();
         $this->networks = new ArrayCollection();
     }
 
     /**
-     * @param Id $id
+     * @param Id                $id
      * @param DateTimeImmutable $date
-     * @param Name $name
-     * @param Email $email
-     * @param string $hash
+     * @param Name              $name
+     * @param string            $alias
+     * @param Email             $email
+     * @param string            $hash
+     *
      * @return $this
      */
-    public static function create(Id $id, DateTimeImmutable $date, Name $name, Email $email, string $hash): self
+    public static function create(Id $id, DateTimeImmutable $date, Name $name, string $alias, Email $email, string $hash): self
     {
-        $user = new self($id, $date, $name);
-        $user->email = $email;
+        $user               = new self($id, $date, $name);
+        $user->email        = $email;
         $user->passwordHash = $hash;
-        $user->status = self::STATUS_ACTIVE;
+        $user->status       = self::STATUS_ACTIVE;
+        $user->alias        = $alias;
+
         return $user;
     }
 
     /**
-     * @param Id $id
+     * @param Id                $id
      * @param DateTimeImmutable $date
-     * @param Name $name
-     * @param Email $email
-     * @param string $hash
-     * @param string $token
+     * @param Name              $name
+     * @param string            $alias
+     * @param Email             $email
+     * @param string            $hash
+     * @param string            $token
+     *
      * @return $this
      */
-    public static function signUpByEmail(Id $id, DateTimeImmutable $date, Name $name, Email $email, string $hash, string $token): self
+    public static function signUpByEmail(Id $id, DateTimeImmutable $date, Name $name, string $alias, Email $email, string $hash, string $token): self
     {
-        $user = new self($id, $date, $name);
-        $user->email = $email;
+        $user               = new self($id, $date, $name);
+        $user->alias        = $alias;
+        $user->email        = $email;
         $user->passwordHash = $hash;
         $user->confirmToken = $token;
-        $user->status = self::STATUS_WAIT;
+        $user->status       = self::STATUS_WAIT;
+
         return $user;
     }
 
@@ -180,22 +194,24 @@ class User
             throw new DomainException('Пользователь уже подтвержден.');
         }
 
-        $this->status = self::STATUS_ACTIVE;
+        $this->status       = self::STATUS_ACTIVE;
         $this->confirmToken = null;
     }
 
     /**
-     * @param Id $id
+     * @param Id                $id
      * @param DateTimeImmutable $date
-     * @param Name $name
-     * @param string $network
-     * @param string $identity
+     * @param Name              $name
+     * @param string            $network
+     * @param string            $identity
+     *
      * @return $this
      * @throws Exception
      */
     public static function signUpByNetwork(Id $id, DateTimeImmutable $date, Name $name, string $network, string $identity): self
     {
-        $user = new self($id, $date, $name);
+        $user        = new self($id, $date, $name);
+        $user->alias = 'user-' . $identity;
         $user->attachNetwork($network, $identity);
         $user->status = self::STATUS_ACTIVE;
 
@@ -205,6 +221,7 @@ class User
     /**
      * @param string $network
      * @param string $identity
+     *
      * @throws Exception
      */
     public function attachNetwork(string $network, string $identity): void
@@ -230,6 +247,7 @@ class User
                     throw new DomainException('Невозможно отсоединить основную сеть.');
                 }
                 $this->networks->removeElement($existing);
+
                 return;
             }
         }
@@ -237,7 +255,7 @@ class User
     }
 
     /**
-     * @param ResetToken $token
+     * @param ResetToken        $token
      * @param DateTimeImmutable $date
      */
     public function requestPasswordReset(ResetToken $token, DateTimeImmutable $date): void
@@ -259,7 +277,8 @@ class User
 
     /**
      * @param DateTimeImmutable $date
-     * @param string $hash
+     * @param string            $hash
+     *
      * @return string
      */
     public function passwordReset(DateTimeImmutable $date, string $hash): void
@@ -273,11 +292,11 @@ class User
         }
 
         $this->passwordHash = $hash;
-        $this->resetToken = null;
+        $this->resetToken   = null;
     }
 
     /**
-     * @param Email $email
+     * @param Email  $email
      * @param string $token
      */
     public function requestEmailChanging(Email $email, string $token): void
@@ -290,7 +309,7 @@ class User
             throw new DomainException('Новый email совпадает с текущим.');
         }
 
-        $this->newEmail = $email;
+        $this->newEmail      = $email;
         $this->newEmailToken = $token;
     }
 
@@ -307,8 +326,8 @@ class User
             throw new DomainException('Неверный токен изменения пароля.');
         }
 
-        $this->email = $this->newEmail;
-        $this->newEmail = null;
+        $this->email         = $this->newEmail;
+        $this->newEmail      = null;
         $this->newEmailToken = null;
     }
 
@@ -321,12 +340,24 @@ class User
     }
 
     /**
+     * @param string $alias
+     */
+    public function changeAlias(string $alias): void
+    {
+        if ($this->getAlias() == $alias) {
+            throw new DomainException('Alias пользователя остался без изменений.');
+        }
+
+        $this->alias = $alias;
+    }
+
+    /**
      * @param Email $email
-     * @param Name $name
+     * @param Name  $name
      */
     public function edit(Email $email, Name $name): void
     {
-        $this->name = $name;
+        $this->name  = $name;
         $this->email = $email;
     }
 
@@ -412,6 +443,14 @@ class User
     public function getName(): Name
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return $this->alias;
     }
 
     /**
