@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile;
 
+use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 use Faker;
@@ -73,6 +74,12 @@ class ChangeNameTest extends DbWebTestCase
 
         $crawler = $this->submit($this->getSuccessData(), true);
         $this->assertSuccessAlertContains('Имя изменено.', $crawler);
+
+        $this->assertIsInDatabase('user_users', [
+            'id'     => UserFixture::USER_1_ID,
+            'name_first' => 'New First Name',
+            'name_last' => 'New Last Name',
+        ]);
     }
 
     /**
@@ -113,8 +120,8 @@ class ChangeNameTest extends DbWebTestCase
         $faker = Faker\Factory::create();
 
         $data = [
-            'form[first]' => $faker->firstName,
-            'form[last]'  => $faker->lastName,
+            'form[first]' => 'New First Name',
+            'form[last]'  => 'New Last Name',
         ];
 
         return new FormDataDto($data);

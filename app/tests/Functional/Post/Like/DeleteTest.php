@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Post\Like;
 
+use App\DataFixtures\UserFixture;
+use App\Model\Post\Entity\Post\Post;
+use App\Tests\Fixtures\PostFixture;
 use App\Tests\Functional\DbWebTestCase;
 
 class DeleteTest extends DbWebTestCase
@@ -71,6 +74,12 @@ class DeleteTest extends DbWebTestCase
         $this->auth();
         $crawler = $this->delete(self::BASE_URL, true);
         $this->assertSuccessAlertContains('Публикация удалена из списка понравившихся.', $crawler);
+
+        $this->assertIsNotInDatabase('like_likes', [
+            'entity_type' => Post::class,
+            'entity_id' => PostFixture::POST_4_ID,
+            'author_id' => UserFixture::USER_1_ID,
+        ]);
     }
 
     /**

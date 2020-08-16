@@ -6,6 +6,7 @@ namespace App\Tests\Functional;
 
 use App\Tests\Functional\Helpers\AlertTrait;
 use App\Tests\Functional\Helpers\AuthTrait;
+use App\Tests\Functional\Helpers\DbTrait;
 use App\Tests\Functional\Helpers\FormTrait;
 use App\Tests\Functional\Helpers\UrlTrait;
 use Doctrine\DBAL\ConnectionException;
@@ -16,12 +17,12 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class DbWebTestCase extends WebTestCase
 {
-    use UrlTrait, AlertTrait, FormTrait, AuthTrait;
+    use UrlTrait, AlertTrait, FormTrait, AuthTrait, DbTrait;
 
     /**
      * @var EntityManagerInterface
      */
-    private $em;
+    public $em;
 
     /**
      * @var KernelBrowser

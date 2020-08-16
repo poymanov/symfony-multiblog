@@ -7,10 +7,11 @@ namespace App\Tests\Functional\Profile\Posts;
 use App\Model\Post\Entity\Post\Id;
 use App\Tests\Fixtures\PostFixture;
 use App\Tests\Functional\DbWebTestCase;
+use Exception;
 
 class PublishTest extends DbWebTestCase
 {
-    private const BASE_URL = '/profile/posts/publish/';
+    private const BASE_URL   = '/profile/posts/publish/';
     private const POST_3_URL = self::BASE_URL . PostFixture::POST_3_ID;
 
     /**
@@ -83,5 +84,10 @@ class PublishTest extends DbWebTestCase
 
         $this->assertCurrentUri('profile/posts');
         $this->assertSuccessAlertContains('Публикация опубликована.', $crawler);
+
+        $this->assertIsInDatabase('post_posts', [
+            'id'     => PostFixture::POST_1_ID,
+            'status' => 'published',
+        ]);
     }
 }

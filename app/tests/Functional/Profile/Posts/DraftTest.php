@@ -7,10 +7,11 @@ namespace App\Tests\Functional\Profile\Posts;
 use App\Model\Post\Entity\Post\Id;
 use App\Tests\Fixtures\PostFixture;
 use App\Tests\Functional\DbWebTestCase;
+use Exception;
 
 class DraftTest extends DbWebTestCase
 {
-    private const BASE_URL = '/profile/posts/draft/';
+    private const BASE_URL   = '/profile/posts/draft/';
     private const POST_3_URL = self::BASE_URL . PostFixture::POST_3_ID;
 
     /**
@@ -83,5 +84,10 @@ class DraftTest extends DbWebTestCase
 
         $this->assertCurrentUri('profile/posts');
         $this->assertSuccessAlertContains('Публикация переведена в черновики.', $crawler);
+
+        $this->assertIsInDatabase('post_posts', [
+            'id'     => PostFixture::POST_3_ID,
+            'status' => 'draft',
+        ]);
     }
 }

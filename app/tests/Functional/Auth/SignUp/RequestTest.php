@@ -47,6 +47,7 @@ class RequestTest extends DbWebTestCase
 
         $crawler = $this->submit($this->getSuccessData(), true);
         $this->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
+        $this->assertIsInDatabase('user_users', ['email' => 'tom-bent@app.test']);
     }
 
     /**

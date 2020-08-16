@@ -20,6 +20,10 @@ class ConfirmTest extends DbWebTestCase
 
         $this->assertCurrentUri();
         $this->assertSuccessAlertContains('Ваш email успешно подтвержден.', $crawler);
+        $this->assertIsNotInDatabase('user_users', [
+            'email' => 'not-confirmed-confirm@app.test', 'confirm_token' => 'not-confirmed-token'
+        ]);
+        $this->assertIsInDatabase('user_users', ['email' => 'not-confirmed-confirm@app.test', 'status' => 'active']);
     }
 
     /**

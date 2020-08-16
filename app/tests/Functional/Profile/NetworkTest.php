@@ -51,6 +51,11 @@ class NetworkTest extends DbWebTestCase
 
         $this->assertCurrentUri('profile/social');
         $this->assertSuccessAlertContains('Facebook отключен.', $crawler);
+
+        $this->assertIsNotInDatabase('user_user_networks', [
+            'network'  => 'facebook',
+            'identity' => '0001',
+        ]);
     }
 
     /**

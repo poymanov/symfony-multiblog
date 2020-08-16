@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Profile\Posts;
 
+use App\DataFixtures\UserFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 
@@ -61,6 +62,14 @@ class CreateTest extends DbWebTestCase
 
         $this->assertCurrentUri('profile/posts');
         $this->assertSuccessAlertContains('Новая запись опубликована.', $crawler);
+
+        $this->assertIsInDatabase('post_posts', [
+            'title'        => 'Test 2',
+            'preview_text' => 'Test 2',
+            'text'         => 'test 2',
+            'alias'        => 'test-2',
+            'author_id'    => UserFixture::USER_1_ID,
+        ]);
     }
 
     /**

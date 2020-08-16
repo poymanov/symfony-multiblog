@@ -65,5 +65,16 @@ class ConfirmTest extends DbWebTestCase
         $this->assertResponseIsSuccessful();
 
         $this->assertContains('test@test.ru', $crawler->filter('body')->text());
+
+        $this->assertIsInDatabase('user_users', [
+            'email' => 'test@test.ru',
+            'new_email' => null,
+            'new_email_token' => null,
+        ]);
+
+        $this->assertIsNotInDatabase('user_users', [
+            'email' => 'invalid-new-email-token-user@app.test',
+            'new_email' => 'test@test.ru',
+        ]);
     }
 }

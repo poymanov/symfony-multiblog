@@ -84,6 +84,17 @@ class RequestTest extends DbWebTestCase
         $this->assertCurrentUri('profile');
 
         $this->assertSuccessAlertContains('Проверьте ваш email.', $crawler);
+
+        $this->assertIsInDatabase('user_users', [
+            'email' => 'user@app.test',
+            'new_email' => 'user2@app.test',
+        ]);
+
+        $this->assertIsNotInDatabase('user_users', [
+            'email' => 'user@app.test',
+            'new_email' => 'user2@app.test',
+            'new_email_token' => null,
+        ]);
     }
 
     /**

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Post\Comment;
 
+use App\DataFixtures\UserFixture;
+use App\Model\Post\Entity\Post\Post;
+use App\Tests\Fixtures\PostFixture;
 use App\Tests\Functional\DbWebTestCase;
 use App\Tests\Functional\Helpers\FormDataDto;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,7 +66,7 @@ class CreateTest extends DbWebTestCase
     }
 
     /**
-     * Страница добавления нового комментария недоступна для публикации-черновика
+     * Страница добавления нового комментария доступна для публикации
      */
     public function testCreatePageSuccess()
     {
@@ -126,6 +129,12 @@ class CreateTest extends DbWebTestCase
         $this->assertCurrentUri('posts/another-published-test/comments');
 
         $this->assertSuccessAlertContains('Комментарий добавлен.', $crawler);
+        $this->assertIsInDatabase('comment_comments', [
+            'entity_type' => Post::class,
+            'entity_id' => PostFixture::POST_4_ID,
+            'author_id' => UserFixture::USER_1_ID,
+            'text' => 'test'
+        ]);
     }
 
     /**

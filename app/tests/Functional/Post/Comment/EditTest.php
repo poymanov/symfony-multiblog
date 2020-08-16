@@ -119,6 +119,10 @@ class EditTest extends DbWebTestCase
         $crawler = $this->submit($this->getSuccessData(), true);
         $this->assertCurrentUri('posts/another-published-test/comments');
         $this->assertSuccessAlertContains('Комментарий изменен.', $crawler);
+        $this->assertIsInDatabase('comment_comments', [
+            'id' => CommentFixture::COMMENT_1_ID,
+            'text' => 'test2',
+        ]);
     }
 
     /**

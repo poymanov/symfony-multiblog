@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Model\User\Entity\User\Email;
+use App\Model\User\Entity\User\Id;
 use App\Model\User\Service\PasswordHasher;
 use App\Tests\Builder\User\UserBuilder;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -13,6 +14,8 @@ use Doctrine\Persistence\ObjectManager;
 class UserFixture extends Fixture
 {
     private PasswordHasher $hasher;
+
+    public const USER_1_ID = '00000000-0000-0000-0000-000000000001';
 
     public const REFERENCE_USER = 'main_user';
 
@@ -29,6 +32,7 @@ class UserFixture extends Fixture
         $hash = $this->hasher->hash('123qwe');
 
         $confirmedUser = (new UserBuilder())
+            ->withId(new Id(self::USER_1_ID))
             ->viaEmail(new Email('user@app.test'), $hash)
             ->confirmed()
             ->build();
@@ -45,7 +49,7 @@ class UserFixture extends Fixture
     {
         return [
             'PHP_AUTH_USER' => 'user@app.test',
-            'PHP_AUTH_PW' => '123qwe',
+            'PHP_AUTH_PW'   => '123qwe',
         ];
     }
 }

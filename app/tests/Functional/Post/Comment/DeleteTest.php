@@ -104,6 +104,9 @@ class DeleteTest extends DbWebTestCase
         $this->assertCurrentUri('posts/another-published-test/comments');
 
         $this->assertSuccessAlertContains('Комментарий удален.', $crawler);
+        $this->assertIsNotInDatabase('comment_comments', [
+            'id' => CommentFixture::COMMENT_1_ID
+        ]);
     }
 
     /**

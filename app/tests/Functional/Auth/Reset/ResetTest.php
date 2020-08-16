@@ -84,6 +84,11 @@ class ResetTest extends DbWebTestCase
         $crawler = $this->submit($this->getSuccessData(), true);
         $this->assertCurrentUri();
         $this->assertSuccessAlertContains('Пароль успешно изменен.', $crawler);
+        $this->assertIsInDatabase('user_users', [
+            'email' => 'request-reset-token@email.test',
+            'reset_token_token' => null,
+            'reset_token_expires' => null,
+        ]);
     }
 
     /**

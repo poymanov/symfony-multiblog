@@ -12,7 +12,7 @@ use Exception;
 
 class EditTest extends DbWebTestCase
 {
-    private const BASE_URL = '/profile/posts/edit/';
+    private const BASE_URL   = '/profile/posts/edit/';
     private const POST_1_URL = self::BASE_URL . PostFixture::POST_1_ID;
 
     /**
@@ -133,6 +133,13 @@ class EditTest extends DbWebTestCase
 
         $this->assertCurrentUri('profile/posts');
         $this->assertSuccessAlertContains('Публикация изменена.', $crawler);
+
+        $this->assertIsInDatabase('post_posts', [
+            'id'           => PostFixture::POST_1_ID,
+            'title'        => 'Test 2',
+            'preview_text' => 'Test 2',
+            'text'         => 'test 2',
+        ]);
     }
 
     /**
