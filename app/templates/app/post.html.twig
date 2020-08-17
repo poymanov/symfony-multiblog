@@ -9,7 +9,7 @@
                 <div class="blog-post mb-2">
                     <h1 class="blog-post-title">{{ post.title }}</h1>
                     <p class="blog-post-meta">
-                        {{ post.publishedAt|date('d-m-Y') }}, {{ author.name.full }}
+                        {{ post.publishedAt|date('d-m-Y') }}, <a href="{{ path('users.profile', {'alias': author.alias}) }}">{{ author.name.full }}</a>
                     </p>
                     <p>{{ post.previewText }}</p>
                     <p>{{ post.text }}</p>
@@ -28,7 +28,7 @@
                     <div class="comment card">
                         <div class="card-header d-flex justify-content-between">
                             <div>
-                                {{ comment.author }}
+                                <a href="{{ path('users.profile', {'alias': comment.author_alias}) }}">{{ comment.author }}</a>
                             </div>
                             <div>
                                 {{ comment.created_at|date('d-m-Y H:i')  }} {% if comment.updated_at %} / Отредактировано: {{ comment.updated_at|date('d-m-Y H:i') }} {% endif %}

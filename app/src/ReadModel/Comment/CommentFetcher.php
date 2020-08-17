@@ -58,6 +58,7 @@ class CommentFetcher
                 'c.entity_type',
                 'c.entity_id',
                 'TRIM(CONCAT(u.name_first, \' \', u.name_last)) as author',
+                'u.alias as author_alias',
                 'c.created_at',
                 'c.updated_at',
             )

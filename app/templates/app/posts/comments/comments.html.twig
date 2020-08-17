@@ -23,7 +23,7 @@
                             <div class="comment card">
                                 <div class="card-header d-flex justify-content-between">
                                     <div>
-                                        {{ comment.author }}
+                                        <a href="{{ path('users.profile', {'alias': comment.author_alias}) }}">{{ comment.author }}</a>
                                     </div>
                                     <div>
                                         {{ comment.created_at|date('d-m-Y H:i')  }} {% if comment.updated_at %} / Отредактировано: {{ comment.updated_at|date('d-m-Y H:i') }} {% endif %}

@@ -83,6 +83,7 @@ class PostFetcher
                 'p.preview_text as preview',
                 'p.published_at as published',
                 'TRIM(CONCAT(u.name_first, \' \', u.name_last)) as author',
+                'u.alias as author_alias',
                 '(SELECT COUNT(*) FROM like_likes WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as likes',
                 '(SELECT COUNT(*) FROM comment_comments WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as comments',
             )
@@ -93,6 +94,46 @@ class PostFetcher
             ->orderBy('p.published_at', 'DESC');
 
         return $this->paginator->paginate($qb, $page, $perPage);
+    }
+
+    /**
+     * Сколько лайков поставили публикациям пользователя
+     *
+     * @param string $userId
+     *
+     * @return int
+     */
+    public function countLikesForUserPosts(string $userId): int
+    {
+        return $this->connection->createQueryBuilder()
+                ->select('COUNT (*)')
+                ->from('like_likes', 'l')
+                ->innerJoin('l', 'post_posts', 'p', 'l.entity_id = CAST(p.id as varchar)')
+                ->where('l.entity_type = :entity_type')
+                ->andWhere('p.author_id = :author_id')
+                ->setParameter(':entity_type', Post::class)
+                ->setParameter(':author_id', $userId)
+                ->execute()->fetchColumn();
+    }
+
+    /**
+     * Сколько комментариев оставили публикациям пользователя
+     *
+     * @param string $userId
+     *
+     * @return int
+     */
+    public function countCommentsForUserPosts(string $userId): int
+    {
+        return $this->connection->createQueryBuilder()
+            ->select('COUNT (*)')
+            ->from('comment_comments', 'c')
+            ->innerJoin('c', 'post_posts', 'p', 'c.entity_id = CAST(p.id as varchar)')
+            ->where('c.entity_type = :entity_type')
+            ->andWhere('p.author_id = :author_id')
+            ->setParameter(':entity_type', Post::class)
+            ->setParameter(':author_id', $userId)
+            ->execute()->fetchColumn();
     }
 
     /**

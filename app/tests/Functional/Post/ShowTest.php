@@ -150,4 +150,24 @@ class ShowTest extends DbWebTestCase
 
         self::assertEquals(1, $crawler->filter('a[href="' . self::POST_DETAIL_BASE_URL . 'another-published-test/comments/create' . '"]')->count());
     }
+
+    /**
+     * Есть ссылка на профиль автора публикации
+     */
+    public function testLinkToUserProfile()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        self::assertEquals(1, $crawler->filter('a[href="/users/test-first-name-2-test-last-name-2"]')->count());
+    }
+
+    /**
+     * Есть ссылка на профиль автора публикации
+     */
+    public function testLinkToCommentAuthorProfile()
+    {
+        $crawler = $this->get(self::POST_DETAIL_BASE_URL . 'another-published-test');
+
+        self::assertEquals(1, $crawler->filter('a[href="/users/test-first-name-test-last-name"]')->count());
+    }
 }

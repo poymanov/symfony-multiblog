@@ -59,7 +59,7 @@ class ListTest extends DbWebTestCase
         $this->assertEquals(1, $commentNode->count());
         $this->assertEquals('25', $commentNode->text());
     }
-    
+
     /**
      * Вывод комментариев с учетом пагинации
      */
@@ -104,5 +104,15 @@ class ListTest extends DbWebTestCase
     {
         $crawler = $this->get(self::BASE_URL);
         $this->assertContains('10-08-2099 21:55', $crawler->filter('body')->text());
+    }
+
+    /**
+     * Есть ссылка на профиль автора комментария
+     */
+    public function testLinkToUserProfile()
+    {
+        $crawler = $this->get(self::BASE_URL);
+
+        self::assertEquals(1, $crawler->filter('a[href="/users/test-first-name-test-last-name"]')->count());
     }
 }

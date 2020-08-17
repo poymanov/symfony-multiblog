@@ -95,4 +95,14 @@ class ListTest extends DbWebTestCase
         $this->assertEquals(1, $commentsNode->count());
         $this->assertEquals('25', $commentsNode->text());
     }
+
+    /**
+     * В списке публикаций есть ссылки на профили авторов публикаций
+     */
+    public function testLinkToUserProfile()
+    {
+        $crawler = $this->get('/');
+
+        self::assertEquals(1, $crawler->filter('a[href="/users/first-last"]')->count());
+    }
 }

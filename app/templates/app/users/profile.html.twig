@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Профиль - {{ user.name.full }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>{{ user.name.full }}</h1>
+            </div>
+            <div class="col-md-12">
+                <p><b>Оценили публикации:</b> <span class="likes-count">{{ likes }}</span></p>
+                <p><b>Прокомментировали публикации:</b> <span class="comments-count">{{ comments }}</span></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
