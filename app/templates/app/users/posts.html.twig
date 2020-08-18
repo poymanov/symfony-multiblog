@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Публикации - {{ user.name.full }}{% endblock %}
+
+{% block body %}
+    <div class="container mb-4">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Публикации <a href="{{ path('users.profile', {'alias': user.alias}) }}">{{ user.name.full }}</a></h1>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            {% for post in posts %}
+                <div class="col-md-12 mb-4">
+                    <div class="blog-post">
+                        <h2 class="blog-post-title"><a href="{{ path('post', {'alias': post.alias}) }}">{{ post.title }}</a></h2>
+                        <p class="blog-post-meta">
+                            {{ post.published|date('d-m-Y') }}{% if post.likes > 0 %}, понравилось: <span class="likes-count">{{ post.likes }}</span>{% endif %}{% if post.comments > 0 %}, комментариев: <span class="comments-count">{{ post.comments }}</span>{% endif %}
+                        </p>
+                        <p>{{ post.preview }}</p>
+                        <p>
+                            <a href="{{ path('post', {'alias': post.alias}) }}" class="btn btn-outline-success">Читать дальше &#8594;</a>
+                        </p>
+                    </div>
+                </div>
+                <hr />
+            {% endfor %}
+            <div class="col-md-12">
+                <div class="navigation">
+                    {{ knp_pagination_render(posts) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

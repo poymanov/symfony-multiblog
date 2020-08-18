@@ -57,13 +57,43 @@ class PostFetcher
                 'p.status',
                 '(SELECT COUNT(*) FROM like_likes WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as likes',
                 '(SELECT COUNT(*) FROM comment_comments WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as comments',
+                'p.preview_text as preview',
                 'p.created_at as created',
-                'p.published_at as published'
+                'p.published_at as published',
             )
             ->from('post_posts p')
             ->andWhere('p.author_id = :author_id')
             ->setParameter(':author_id', $id)
             ->orderBy('p.created_at');
+
+        return $this->paginator->paginate($qb, $page, $perPage);
+    }
+
+    /**
+     * @param string $id
+     *
+     * @param int    $page
+     * @param int    $perPage
+     *
+     * @return PaginationInterface
+     */
+    public function allPublishedForUser(string $id, int $page, int $perPage): PaginationInterface
+    {
+        $qb = $this->connection->createQueryBuilder()
+            ->select(
+                'p.alias',
+                'p.title',
+                '(SELECT COUNT(*) FROM like_likes WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as likes',
+                '(SELECT COUNT(*) FROM comment_comments WHERE entity_id = CAST(p.id as varchar) AND entity_type = \'' . Post::class . '\') as comments',
+                'p.preview_text as preview',
+                'p.published_at as published',
+            )
+            ->from('post_posts p')
+            ->andWhere('p.author_id = :author_id')
+            ->andWhere('p.status = :status')
+            ->setParameter(':author_id', $id)
+            ->setParameter(':status', Status::STATUS_PUBLISHED)
+            ->orderBy('p.published_at', 'DESC');
 
         return $this->paginator->paginate($qb, $page, $perPage);
     }

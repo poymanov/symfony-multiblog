@@ -101,7 +101,7 @@ class ShowTest extends DbWebTestCase
     }
 
     /**
-     * Вывод общего количества комментариев и ссылки на страницу всех комментариев
+     * Вывод общего количества комментариев
      */
     public function testCommentsCounter()
     {

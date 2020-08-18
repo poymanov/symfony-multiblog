@@ -24,7 +24,7 @@ class ListTest extends DbWebTestCase
      */
     public function testPublished()
     {
-        $crawler = $this->get('/');
+        $crawler = $this->get('/?page=2');
 
         $this->assertContains('Published Test Title', $this->getBodyText($crawler));
         $this->assertContains('Published Test Preview Text', $this->getBodyText($crawler));
@@ -88,7 +88,7 @@ class ListTest extends DbWebTestCase
      */
     public function testCommentsCount()
     {
-        $crawler = $this->get('/');
+        $crawler = $this->get('/?page=2');
 
         $commentsNode = $crawler->filterXPath('//*[contains(@class, "comments-count")]');
 
@@ -101,7 +101,7 @@ class ListTest extends DbWebTestCase
      */
     public function testLinkToUserProfile()
     {
-        $crawler = $this->get('/');
+        $crawler = $this->get('/?page=2');
 
         self::assertEquals(1, $crawler->filter('a[href="/users/first-last"]')->count());
     }

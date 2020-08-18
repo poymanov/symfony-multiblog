@@ -12,6 +12,36 @@
                 <p><b>Оценили публикации:</b> <span class="likes-count">{{ likes }}</span></p>
                 <p><b>Прокомментировали публикации:</b> <span class="comments-count">{{ comments }}</span></p>
             </div>
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-2">
+                <h2 class="posts-title">Публикации ({{ posts.getTotalItemCount }})</h2>
+            </div>
+            {% for post in posts %}
+                <div class="col-md-12 mb-4">
+                    <div class="blog-post">
+                        <h3 class="blog-post-title-profile"><a href="{{ path('post', {'alias': post.alias}) }}">{{ post.title }}</a></h3>
+                        <p class="blog-post-meta">
+                            {{ post.published|date('d-m-Y') }}{% if post.likes > 0 %}, понравилось: <span class="post-likes-count">{{ post.likes }}</span>{% endif %}{% if post.comments > 0 %}, комментариев: <span class="post-comments-count">{{ post.comments }}</span>{% endif %}
+                        </p>
+                        <p>{{ post.preview }}</p>
+                        <p>
+                            <a href="{{ path('post', {'alias': post.alias}) }}" class="btn btn-outline-success">Читать дальше &#8594;</a>
+                        </p>
+                    </div>
+                </div>
+                <hr />
+            {% endfor %}
+            {%  if posts.getTotalItemCount > 5 %}
+            <div class="col-md-12">
+                <a href="{{ path('users.posts', {'alias': user.alias}) }}" class="d-block btn btn-info">Все публикации</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

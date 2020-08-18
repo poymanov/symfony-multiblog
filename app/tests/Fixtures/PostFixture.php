@@ -118,10 +118,13 @@ class PostFixture extends Fixture implements DependentFixtureInterface
         /** @var User $user */
         $user = $this->getReference(UserFixture::REFERENCE_USER_3);
 
+        $date = new DateTimeImmutable();
+
         for ($i = 0; $i < 25; $i++) {
             $post = (new PostBuilder())
-                ->published()
+                ->published($date->modify('+' . ($i + 3) . 'minutes'))
                 ->withAuthorId(new AuthorId($user->getId()->getValue()))
+                ->withTitle('Post #' . $i)
                 ->build();
 
             $manager->persist($post);
